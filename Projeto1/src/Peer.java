@@ -1,0 +1,82 @@
+import java.rmi.AlreadyBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+
+public class Peer implements RemoteInterface {
+	
+	private static int unique_id;
+	private static double protocol_version;
+	
+    private ChannelControl MC;
+    private ChannelBackup MDB;
+    private ChannelRestore MDR;
+	
+	public Peer(String MC_address, int MC_port, String MDB_address, int MDB_port, String MDR_address, int MDR_port) {
+        MC = new ChannelControl(MC_address, MC_port);
+        MDB = new ChannelBackup(MDB_address, MDB_port);
+        MDR = new ChannelRestore(MDR_address, MDR_port);
+	}
+
+	public static void main(String[] args) {
+		
+		if(args.length != 9) { 
+			System.out.println("Invalid use, peer must be called like so: Peer  <protocol_version> <unique_id> <peer_ap> <MC_address> <MC_port> <MDB_address> <MDB_port> <MDR_address> <MDR_port>");
+			return;
+		}
+		
+		protocol_version = Double.parseDouble(args[0]);
+		unique_id = Integer.parseInt(args[1]);
+		String peer_ap = args[2];
+		
+		String MC_address = args[3];
+		int MC_port = Integer.parseInt(args[4]);
+		
+		String MDB_address = args[5];
+		int MDB_port = Integer.parseInt(args[6]);
+		
+		String MDR_address = args[7];
+		int MDR_port = Integer.parseInt(args[8]);
+		
+        try {
+            Peer server = new Peer(MC_address, MC_port, MDB_address, MDB_port, MDR_address, MDR_port);
+            RemoteInterface stub = (RemoteInterface) UnicastRemoteObject.exportObject(server, 0);
+            
+            // Bind the remote object's stub in the registry
+            Registry registry = LocateRegistry.getRegistry();
+            registry.bind(peer_ap, stub);
+            
+            System.err.println("Peer ready");
+        } catch (RemoteException ex) {
+            System.out.println("RMI error: " + ex.getMessage());
+        } catch(AlreadyBoundException ex) {
+        	System.out.println("RMI error: " + ex.getMessage());
+        }
+	}
+	
+    @Override
+	public synchronized void backup(String path, int replicationDegree) {
+    	
+	}
+	
+    @Override
+    public void restore(String path) throws RemoteException {
+    	
+	}
+    
+    @Override
+    public void delete(String path) throws RemoteException {
+    	
+    }
+    
+    @Override
+    public void reclaim(int space) throws RemoteException {
+    	
+    }
+    
+    @Override
+    public void retrieveStateInfo() throws RemoteException {
+    	
+    }
+}
