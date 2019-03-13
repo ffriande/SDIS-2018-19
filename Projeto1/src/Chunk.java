@@ -1,12 +1,22 @@
 public class Chunk {
 	private int chunkNo;
 	private String fieldId;
-	private byte[] content;
+	private byte[] body;
 	private int size;
 	
-    public Chunk(int nr, byte[] content, int size) {
+    public Chunk(int nr, byte[] body, int size) {
         this.chunkNo = nr;
-        this.content = content;
-        this.size = size;
+        this.body = body;
+        this.size=size;
     }
+
+
+    public int getChunkNo(){
+        return this.chunkNo;
+    }
+
+    public byte[] getBody() {
+        return this.body;
+    }
+
 }

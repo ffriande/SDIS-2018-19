@@ -12,6 +12,11 @@ public class Peer implements RemoteInterface {
     private ChannelControl MC;
     private ChannelBackup MDB;
     private ChannelRestore MDR;
+
+    private static String version;
+
+    private int CR = 0xD;   
+	private int LF = 0xA;
 	
 	public Peer(String MC_address, int MC_port, String MDB_address, int MDB_port, String MDR_address, int MDR_port) {
         MC = new ChannelControl(MC_address, MC_port);
@@ -57,7 +62,15 @@ public class Peer implements RemoteInterface {
 	
     @Override
 	public synchronized void backup(String path, int replicationDegree) {
-    	
+        FileSplitter file = new FileSplitter( path, replicationDegree);
+        ArrayList<Chunk> chunks = file.getChunks();
+        for(int i=0;i< chunks.length();i++){
+            String header = "PUTCHUNK " + version + " " + unique_id + " " + chunks[i].getChunkNo() + " " + replicationDegree 
+            + CR + LF + CR + LF + chunks[i].getBody();
+
+            System.out.println(header);
+        }   
+        
 	}
 	
     @Override
