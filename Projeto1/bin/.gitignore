@@ -1,6 +1,3 @@
-/RMIInterface.class
-/RemoteInterface.class
-/Peer.class
-/ChannelControl.class
-/ChannelBackup.class
-/ChannelRestore.class
+/Message.class
+/Chunk.class
+/MessageCreator.class
