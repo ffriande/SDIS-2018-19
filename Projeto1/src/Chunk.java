@@ -1,6 +1,6 @@
 public class Chunk {
 	private int chunkNo;
-	private String fieldId;
+	private String filedId;
 	private byte[] body;
 	private int size;
 	

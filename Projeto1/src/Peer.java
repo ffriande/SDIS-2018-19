@@ -3,6 +3,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.ArrayList;
 
 public class Peer implements RemoteInterface {
 	
@@ -64,9 +65,10 @@ public class Peer implements RemoteInterface {
 	public synchronized void backup(String path, int replicationDegree) {
         FileSplitter file = new FileSplitter( path, replicationDegree);
         ArrayList<Chunk> chunks = file.getChunks();
-        for(int i=0;i< chunks.length();i++){
-            String header = "PUTCHUNK " + version + " " + unique_id + " " + chunks[i].getChunkNo() + " " + replicationDegree 
-            + CR + LF + CR + LF + chunks[i].getBody();
+        
+        for(int i=0;i< chunks.size();i++){
+            String header = "PUTCHUNK " + version + " " + unique_id + " " + chunks.get(i).getChunkNo() + " " + replicationDegree 
+            + CR + LF + CR + LF + chunks.get(i).getBody();
 
             System.out.println(header);
         }   

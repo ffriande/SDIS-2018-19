@@ -21,6 +21,10 @@ public class FileSplitter {
 		splitIntoChuncks();
 		hashIdentifier();
 	}
+	
+	public ArrayList<Chunk> getChunks(){
+		return chunks;
+	}
 
 	private void hashIdentifier() {
 		String fileInfo = file.getName() + "/" + file.getAbsolutePath() + "/" + file.lastModified();
