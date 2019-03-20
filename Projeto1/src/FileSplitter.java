@@ -1,14 +1,15 @@
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class FileSplitter {
 	
-	private int CR = 0xD;
-	private int LF = 0xA;
 	private ArrayList<Chunk> chunks;
 	private int replicationDegree;
 	private File file;
@@ -18,7 +19,14 @@ public class FileSplitter {
 		this.file = new File(path);
 		this.replicationDegree = replicationDeg;
 		this.chunks = new ArrayList<>();
-		splitIntoChuncks();
+		
+		try {
+			splitIntoChuncks();
+		} catch (IOException e) {
+			System.err.println("Couldn't split file " + this.file.getName() + " into chunks!");
+			e.printStackTrace();
+		}
+		
 		hashIdentifier();
 	}
 	
@@ -62,8 +70,28 @@ public class FileSplitter {
 	    return hexString.toString();
 	}
 
-	private void splitIntoChuncks() {
+	private void splitIntoChuncks() throws FileNotFoundException, IOException {
+	    int chunkNo = 1;
+	
+		int sizeOfChunks = 64000;
+		byte[] buffer = new byte[sizeOfChunks];
 		
+		try (FileInputStream fis = new FileInputStream(this.file); 
+			BufferedInputStream bis = new BufferedInputStream(fis)) {
+		
+			int bytesAmount = 0;
+			
+			while ((bytesAmount = bis.read(buffer)) > 0) {
+				
+				Chunk newChunk = new Chunk(chunkNo, buffer, bytesAmount);
+				this.chunks.add(newChunk);
+				
+				chunkNo++;
+			}
+		}
 	}
 	
+	public String getIdentifier() {
+		return identifier;
+	}
 }

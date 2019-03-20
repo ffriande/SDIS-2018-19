@@ -4,11 +4,13 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class Peer implements RemoteInterface {
 	
 	private static int unique_id;
 	private static double protocol_version;
+	private static ScheduledThreadPoolExecutor threadPool;
 	
     private ChannelControl MC;
     private ChannelBackup MDB;
@@ -63,11 +65,11 @@ public class Peer implements RemoteInterface {
 	
     @Override
 	public synchronized void backup(String path, int replicationDegree) {
-        FileSplitter file = new FileSplitter( path, replicationDegree);
+        FileSplitter file = new FileSplitter(path, replicationDegree);
         ArrayList<Chunk> chunks = file.getChunks();
         
         for(int i=0;i< chunks.size();i++){
-            String header = "PUTCHUNK " + version + " " + unique_id + " " + chunks.get(i).getChunkNo() + " " + replicationDegree 
+            String header = "PUTCHUNK " + version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree 
             + CR + LF + CR + LF + chunks.get(i).getBody();
 
             System.out.println(header);
