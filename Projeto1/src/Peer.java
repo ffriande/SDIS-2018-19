@@ -4,7 +4,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class Peer implements RemoteInterface {
 	
@@ -16,8 +18,6 @@ public class Peer implements RemoteInterface {
     private ChannelBackup MDB;
     private ChannelRestore MDR;
 
-    private static String version;
-
     private int CR = 0xD;   
 	private int LF = 0xA;
 	
@@ -25,6 +25,8 @@ public class Peer implements RemoteInterface {
         MC = new ChannelControl(MC_address, MC_port);
         MDB = new ChannelBackup(MDB_address, MDB_port);
         MDR = new ChannelRestore(MDR_address, MDR_port);
+
+        threadPool = new ScheduledThreadPoolExecutor(100);
 	}
 
 	public static void main(String[] args) {
@@ -69,10 +71,12 @@ public class Peer implements RemoteInterface {
         ArrayList<Chunk> chunks = file.getChunks();
         
         for(int i=0;i< chunks.size();i++){
-            String header = "PUTCHUNK " + version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree 
+            String header = "PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree+ " " 
             + CR + LF + CR + LF + chunks.get(i).getBody();
 
             System.out.println(header);
+            
+            threadPool.schedule(MDB, randomDelay(), TimeUnit.MILLISECONDS);
         }   
         
 	}
@@ -95,5 +99,11 @@ public class Peer implements RemoteInterface {
     @Override
     public void retrieveStateInfo() throws RemoteException {
     	
+    }
+
+    public int randomDelay(){ 
+        Random rand = new Random();
+        //[0-400]ms delay
+        return rand.nextInt(401);
     }
 }
