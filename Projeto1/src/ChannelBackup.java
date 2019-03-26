@@ -1,4 +1,8 @@
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 
 public class ChannelBackup implements Runnable {
@@ -18,12 +22,40 @@ public class ChannelBackup implements Runnable {
         }
 	}
 	
+	public void sendMessage(byte[] msg) {
+    
+        try (DatagramSocket sender = new DatagramSocket()) {
+            DatagramPacket message = new DatagramPacket(msg, msg.length, address, port);
+            sender.send(message);
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        
+	}
+	
 	
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
-		System.out.println("aqui");
-		
+
+        byte[] buf = new byte[256];
+
+        try {
+
+            MulticastSocket receiver = new MulticastSocket(port);
+            receiver.joinGroup(address);
+
+            while (true) {
+                DatagramPacket msg = new DatagramPacket(buf, buf.length);
+                receiver.receive(msg);
+
+                byte[] otherbuf = new byte[256];
+                
+                Peer.getExecutor().execute(new HandleMessage(otherbuf));
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 	}
 
 }

@@ -1,6 +1,6 @@
 public class Chunk {
 	private int chunkNo;
-	private String filedId;
+	private String fileId;
 	private byte[] body;
 	private int size;
 	
@@ -10,6 +10,13 @@ public class Chunk {
         this.size=size;
     }
 
+    public String getFileId() {
+    	return fileId;
+    }
+    
+    public int getSize() {
+    	return size;
+    }
 
     public int getChunkNo(){
         return this.chunkNo;

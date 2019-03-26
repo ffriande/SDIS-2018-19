@@ -1,3 +1,13 @@
 /ChannelBackup.class
 /ChannelControl.class
 /ChannelRestore.class
+/Chunk.class
+/FileSplitter.class
+/a.png
+/Storage.class
+/HandleMessage.class
+/handlePutChunk.class
+/handleStored.class
+/HandlePutChunk.class
+/HandleStored.class
+/CollectConfirmMessages.class

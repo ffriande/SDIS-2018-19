@@ -1,3 +1,4 @@
+import java.io.UnsupportedEncodingException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -13,20 +14,41 @@ public class Peer implements RemoteInterface {
 	private static int unique_id;
 	private static double protocol_version;
 	private static ScheduledThreadPoolExecutor threadPool;
+	private static Storage storage;
 	
-    private ChannelControl MC;
-    private ChannelBackup MDB;
+    private static ChannelControl MC;
+    private static ChannelBackup MDB;
     private ChannelRestore MDR;
 
     private int CR = 0xD;   
 	private int LF = 0xA;
 	
 	public Peer(String MC_address, int MC_port, String MDB_address, int MDB_port, String MDR_address, int MDR_port) {
-        MC = new ChannelControl(MC_address, MC_port);
+		storage = new Storage();
+		threadPool = new ScheduledThreadPoolExecutor(100);
+		MC = new ChannelControl(MC_address, MC_port);
         MDB = new ChannelBackup(MDB_address, MDB_port);
         MDR = new ChannelRestore(MDR_address, MDR_port);
-
-        threadPool = new ScheduledThreadPoolExecutor(100);
+	}
+	
+	public static ChannelBackup getMDB() {
+		return MDB;
+	}
+	
+	public static ChannelControl getMC() {
+		return MC;
+	}
+	
+	static ScheduledThreadPoolExecutor getExecutor() {
+		return threadPool;
+	}
+	
+	public static Storage getStorage() {
+		return storage;
+	}
+	
+	public static int getUniqueId() {
+		return unique_id;
 	}
 
 	public static void main(String[] args) {
@@ -77,6 +99,19 @@ public class Peer implements RemoteInterface {
             System.out.println(header);
             
             threadPool.schedule(MDB, randomDelay(), TimeUnit.MILLISECONDS);
+            
+            try {
+                byte[] asciiHead = header.getBytes("US-ASCII");
+                byte[] body = chunks.get(i).getBody();
+                byte[] message = new byte[asciiHead.length + body.length];
+                
+                MDB.sendMessage(message);
+         
+                Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, file.getIdentifier(), chunks.get(i).getChunkNo(), replicationDegree), 1, TimeUnit.SECONDS);
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
         }   
         
 	}
