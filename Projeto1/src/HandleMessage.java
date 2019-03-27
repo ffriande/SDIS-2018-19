@@ -12,6 +12,8 @@ public class HandleMessage implements Runnable {
 	@Override
 	public void run() {
         String msg = new String(message, 0, message.length);
+        
+        System.out.println(msg);
       
         String splitMsg = msg.trim();
         String[] msgParts = splitMsg.split(" ");

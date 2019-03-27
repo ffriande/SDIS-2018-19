@@ -18,7 +18,7 @@ public class Peer implements RemoteInterface {
 	
     private static ChannelControl MC;
     private static ChannelBackup MDB;
-    private ChannelRestore MDR;
+    private static ChannelRestore MDR;
 
     private int CR = 0xD;   
 	private int LF = 0xA;
@@ -85,6 +85,10 @@ public class Peer implements RemoteInterface {
         } catch(AlreadyBoundException ex) {
         	System.out.println("RMI error: " + ex.getMessage());
         }
+        
+        threadPool.execute(MC);
+        threadPool.execute(MDB);
+        threadPool.execute(MDR);
 	}
 	
     @Override
@@ -97,21 +101,17 @@ public class Peer implements RemoteInterface {
             + CR + LF + CR + LF + chunks.get(i).getBody();
 
             System.out.println(header);
+        
+            byte[] asciiHead = header.getBytes();
+            byte[] body = chunks.get(i).getBody();
+            byte[] message = new byte[asciiHead.length + body.length];
             
-            threadPool.schedule(MDB, randomDelay(), TimeUnit.MILLISECONDS);
-            
-            try {
-                byte[] asciiHead = header.getBytes("US-ASCII");
-                byte[] body = chunks.get(i).getBody();
-                byte[] message = new byte[asciiHead.length + body.length];
-                
-                MDB.sendMessage(message);
-         
-                Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, file.getIdentifier(), chunks.get(i).getChunkNo(), replicationDegree), 1, TimeUnit.SECONDS);
-
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            System.arraycopy(asciiHead, 0, message, 0, asciiHead.length);
+            System.arraycopy(body, 0, message, asciiHead.length, body.length);
+             
+            MDB.sendMessage(message);
+     
+            Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, file.getIdentifier(), chunks.get(i).getChunkNo(), replicationDegree), 1, TimeUnit.SECONDS);
         }   
         
 	}
@@ -136,9 +136,4 @@ public class Peer implements RemoteInterface {
     	
     }
 
-    public int randomDelay(){ 
-        Random rand = new Random();
-        //[0-400]ms delay
-        return rand.nextInt(401);
-    }
 }

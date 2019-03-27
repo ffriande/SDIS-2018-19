@@ -34,7 +34,7 @@ public class HandlePutChunk implements Runnable {
 			}
 			
             try {
-                String filename = Peer.getUniqueId() + "/" + fileId + "_" + chunkNumber;
+                String filename = Peer.getUniqueId() + "/" + fileId + "/" + chunkNumber;
 
                 File file = new File(filename);
 
@@ -47,6 +47,9 @@ public class HandlePutChunk implements Runnable {
             }
             
             String header = "STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + CR + LF + CR + LF;
+            
+            System.out.println(header);
+            
             Peer.getMC().sendMessage(header.getBytes());
 		}
 	}

@@ -4,6 +4,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 public class ChannelBackup implements Runnable {
 	
@@ -50,6 +51,8 @@ public class ChannelBackup implements Runnable {
                 receiver.receive(msg);
 
                 byte[] otherbuf = new byte[256];
+                
+                otherbuf = Arrays.copyOf(buf, msg.getLength());
                 
                 Peer.getExecutor().execute(new HandleMessage(otherbuf));
             }
