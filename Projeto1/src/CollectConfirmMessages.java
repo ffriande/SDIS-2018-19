@@ -4,15 +4,15 @@ public class CollectConfirmMessages implements Runnable {
 	
 	private byte[] message;
 	private int waitingTime;
-	private String identifier;
+	private String fileId;
 	private int chunkNo;
 	private int replicationDegree;
 	private int counter;
 
-	public CollectConfirmMessages(byte[] message, int waitingTime, String identifier, int chunkNo, int replicationDegree) {
+	public CollectConfirmMessages(byte[] message, int waitingTime, String fileId, int chunkNo, int replicationDegree) {
 		this.message = message;
 		this.waitingTime = waitingTime;
-		this.identifier = identifier;
+		this.fileId = fileId;
 		this.chunkNo = chunkNo;
 		this.replicationDegree = replicationDegree;
 		counter = 1;
@@ -20,7 +20,12 @@ public class CollectConfirmMessages implements Runnable {
 
 	@Override
 	public void run() {
-        int confirmationMessages = 0; // how to count confirmation messages????
+        
+		String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNo;
+		
+		int confirmationMessages = Peer.getStorage().getChunkOccurences().get(uniqueChunkIdentifier);
+		
+		System.out.println("Counted for " + uniqueChunkIdentifier + " STORED: " + confirmationMessages + " replication degree " + replicationDegree);
 
         if (confirmationMessages < replicationDegree) { 
 

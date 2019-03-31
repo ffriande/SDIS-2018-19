@@ -34,7 +34,18 @@ public class HandlePutChunk implements Runnable {
 			}
 			
             try {
-                String filename = Peer.getUniqueId() + "/" + fileId + "/" + chunkNumber;
+            	
+            	String pathToBackup = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId;
+            	
+            	String pathToRestore = "peer" + Peer.getUniqueId() + "/" + "restore";
+            	
+            	File subdirectoryBackup = new File(pathToBackup);
+            	subdirectoryBackup.mkdirs();
+            	
+            	File subdirectoryRestore = new File(pathToRestore);
+            	subdirectoryRestore.mkdir();
+            	
+                String filename = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkNumber;
 
                 File file = new File(filename);
 
@@ -48,7 +59,7 @@ public class HandlePutChunk implements Runnable {
             
             String header = "STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + CR + LF + CR + LF;
             
-            System.out.println(header);
+            System.out.println("STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber);
             
             Peer.getMC().sendMessage(header.getBytes());
 		}

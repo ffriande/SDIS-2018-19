@@ -1,12 +1,15 @@
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Storage {
 	
 	private ArrayList<Chunk> storedChunks;
+	private ConcurrentHashMap<String, Integer> chunkOccurences;
 	private int space;
 	
 	public Storage() {
 		storedChunks = new ArrayList<Chunk>();
+		chunkOccurences = new ConcurrentHashMap<String, Integer>();
 		space = 2000000000;
 	}
 	
@@ -19,8 +22,24 @@ public class Storage {
 		}
 		
 		storedChunks.add(chunkToStore);
+		
 		space = space - chunkToStore.getSize();
 		return true;
+	}
+	
+	public ConcurrentHashMap<String, Integer> getChunkOccurences(){
+		return chunkOccurences;
+	}
+	
+	public void countStoredOccurence(String uniqueChunkIdentifier) {
+
+        if (!Peer.getStorage().getChunkOccurences().containsKey(uniqueChunkIdentifier)) {
+            Peer.getStorage().getChunkOccurences().put(uniqueChunkIdentifier, 1);
+        } else {
+            int total = this.chunkOccurences.get(uniqueChunkIdentifier) + 1;
+            this.chunkOccurences.replace(uniqueChunkIdentifier, total);
+        }
+
 	}
 	
 	int getSpace() {

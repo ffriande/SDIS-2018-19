@@ -1,11 +1,9 @@
-import java.io.UnsupportedEncodingException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
-import java.util.Random;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +49,7 @@ public class Peer implements RemoteInterface {
 		return unique_id;
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws RemoteException {
 		
 		if(args.length != 9) { 
 			System.out.println("Invalid use, peer must be called like so: Peer  <protocol_version> <unique_id> <peer_ap> <MC_address> <MC_port> <MDB_address> <MDB_port> <MDR_address> <MDR_port>");
@@ -100,7 +98,7 @@ public class Peer implements RemoteInterface {
             String header = "PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree+ " " 
             + CR + LF + CR + LF + chunks.get(i).getBody();
 
-            System.out.println(header);
+            System.out.println("PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree);
         
             byte[] asciiHead = header.getBytes();
             byte[] body = chunks.get(i).getBody();
