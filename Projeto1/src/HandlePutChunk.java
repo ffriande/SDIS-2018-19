@@ -26,6 +26,7 @@ public class HandlePutChunk implements Runnable {
 	
 	@Override
 	public void run() {
+		
 		if(Peer.getStorage().getSpace() >= chunkBody.length) {
 			Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkBody.length);
 			
@@ -60,6 +61,10 @@ public class HandlePutChunk implements Runnable {
             String header = "STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + CR + LF + CR + LF;
             
             System.out.println("STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber);
+            
+            String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNumber;
+            
+            Peer.getStorage().countStoredOccurence(uniqueChunkIdentifier);
             
             Peer.getMC().sendMessage(header.getBytes());
 		}

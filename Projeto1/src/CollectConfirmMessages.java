@@ -15,7 +15,7 @@ public class CollectConfirmMessages implements Runnable {
 		this.fileId = fileId;
 		this.chunkNo = chunkNo;
 		this.replicationDegree = replicationDegree;
-		counter = 1;
+		counter = 0;
 	}
 
 	@Override

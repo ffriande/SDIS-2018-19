@@ -19,20 +19,24 @@ public class HandleMessage implements Runnable {
         String fileId = msgParts[3];
         int chunkNumber = Integer.parseInt(msgParts[4]);
         
+        int senderPeerID = Integer.parseInt(msgParts[2]);
+        
         String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNumber;
         
         if(msgParts[0].equals("PUTCHUNK")) {
-        	Random random = new Random();
         	
         	if(!Peer.getStorage().getChunkOccurences().contains(uniqueChunkIdentifier)) {
         		Peer.getStorage().getChunkOccurences().put(uniqueChunkIdentifier, 0);
         	}
         	
-        	Peer.getExecutor().schedule(new HandlePutChunk(message), random.nextInt(400), TimeUnit.MILLISECONDS);
+        	if(Peer.getUniqueId() != senderPeerID) {
+            	Random random = new Random();
+            	Peer.getExecutor().schedule(new HandlePutChunk(message), random.nextInt(400), TimeUnit.MILLISECONDS);
+        	}
         }
         
         else if(msgParts[0].equals("STORED")) {
-        	if(!Peer.getStorage().getChunkOccurences().contains(uniqueChunkIdentifier)) {
+        	if(Peer.getUniqueId() != senderPeerID) {
         		Peer.getStorage().countStoredOccurence(uniqueChunkIdentifier);
         		System.out.println("Received STORE for chunk " + uniqueChunkIdentifier);
         	}
