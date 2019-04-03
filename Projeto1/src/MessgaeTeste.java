@@ -1,9 +1,9 @@
 
-public class test implements Runnable {
+public class MessgaeTeste implements Runnable {
 
 	byte[] message;
 	
-	public test(byte[] message) {
+	public MessgaeTeste(byte[] message) {
 		this.message = message;
 	}
 	
