@@ -44,6 +44,9 @@ public class ChannelBackup implements Runnable {
         try {
 
             MulticastSocket receiver = new MulticastSocket(port);
+            
+            System.out.println(address.getHostAddress());
+            
             receiver.joinGroup(address);
 
             while (true) {
