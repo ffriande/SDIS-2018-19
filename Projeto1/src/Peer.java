@@ -107,7 +107,7 @@ public class Peer implements RemoteInterface {
             System.arraycopy(asciiHead, 0, message, 0, asciiHead.length);
             System.arraycopy(body, 0, message, asciiHead.length, body.length);
              
-            MDB.sendMessage(message);
+            Peer.getMDB().sendMessage(message);
      
             Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, file.getIdentifier(), chunks.get(i).getChunkNo(), replicationDegree), 1, TimeUnit.SECONDS);
         }   
