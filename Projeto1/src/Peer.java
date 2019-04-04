@@ -106,8 +106,16 @@ public class Peer implements RemoteInterface {
             
             System.arraycopy(asciiHead, 0, message, 0, asciiHead.length);
             System.arraycopy(body, 0, message, asciiHead.length, body.length);
+            
+            SendMessage messageSenderThread = new SendMessage(message);
              
-            Peer.getMDB().sendMessage(message);
+            threadPool.execute(messageSenderThread);
+            
+            try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				System.out.println("BACKUP SLEEP ERROR ON MESSAGE SENDER");
+			}
      
             Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, file.getIdentifier(), chunks.get(i).getChunkNo(), replicationDegree), 1, TimeUnit.SECONDS);
         }   
