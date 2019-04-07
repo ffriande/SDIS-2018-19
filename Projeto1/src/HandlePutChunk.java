@@ -58,14 +58,6 @@ public class HandlePutChunk implements Runnable {
                 	subdirectoryRestore.mkdir();
             	}
             	
-            	String actualPathToPutChunk = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId;
-            	
-            	File actualPathToChunk = new File (actualPathToPutChunk);
-            	
-            	if(!actualPathToChunk.exists()) {
-            		actualPathToChunk.mkdir();
-            	}
-            	
                 String filename = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkNumber;
 
                 try (FileOutputStream fos = new FileOutputStream(filename)) {
