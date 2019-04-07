@@ -2,7 +2,8 @@ import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Storage {
-	
+
+	private ArrayList<FileContent> files;
 	private ArrayList<Chunk> storedChunks;
 	private ConcurrentHashMap<String, Integer> chunkOccurences;
 	private int space;
@@ -45,4 +46,8 @@ public class Storage {
 	int getSpace() {
 		return space;
 	}
+
+	public void addStoredFile(FileContent file) {
+        this.files.add(file);
+    }
 }
