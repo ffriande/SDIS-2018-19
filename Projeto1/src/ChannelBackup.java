@@ -53,7 +53,7 @@ public class ChannelBackup implements Runnable {
                 DatagramPacket msg = new DatagramPacket(buf, buf.length);
                 receiver.receive(msg);
 
-                byte[] otherbuf = new byte[256];
+                byte[] otherbuf = new byte[65507];
                 
                 otherbuf = Arrays.copyOf(buf, msg.getLength());
                 

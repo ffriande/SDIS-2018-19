@@ -27,6 +27,12 @@ public class HandlePutChunk implements Runnable {
 	@Override
 	public void run() {
 		
+		String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNumber;
+		
+		if(Peer.getStorage().getChunkOccurences().get(uniqueChunkIdentifier) >= replicationDegree) {
+			return;
+		}
+		
 		if(Peer.getStorage().getSpace() >= chunkBody.length) {
 			Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkBody.length);
 			
@@ -48,8 +54,6 @@ public class HandlePutChunk implements Runnable {
             	
                 String filename = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkNumber;
 
-                File file = new File(filename);
-
                 try (FileOutputStream fos = new FileOutputStream(filename)) {
                     fos.write(chunkBody);
                 }
@@ -61,8 +65,6 @@ public class HandlePutChunk implements Runnable {
             String header = "STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + CR + LF + CR + LF;
             
             System.out.println("STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber);
-            
-            String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNumber;
             
             Peer.getStorage().countStoredOccurence(uniqueChunkIdentifier);
             

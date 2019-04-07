@@ -94,7 +94,7 @@ public class Peer implements RemoteInterface {
         FileSplitter file = new FileSplitter(path, replicationDegree);
         ArrayList<Chunk> chunks = file.getChunks();
         
-        for(int i=0;i< chunks.size();i++){
+        for(int i=0;i<chunks.size();i++){
             String header = "PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree+ " " 
             + CR + LF + CR + LF + chunks.get(i).getBody();
 
