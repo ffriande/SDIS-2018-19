@@ -91,8 +91,9 @@ public class Peer implements RemoteInterface {
 	
     @Override
 	public synchronized void backup(String path, int replicationDegree) {
-        FileSplitter file = new FileSplitter(path, replicationDegree);
+        FileContent file = new FileContent(path, replicationDegree);
         ArrayList<Chunk> chunks = file.getChunks();
+        storage.addStoredFile(file);
         
         for(int i=0;i<chunks.size();i++){
             String header = "PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree+ " " 
