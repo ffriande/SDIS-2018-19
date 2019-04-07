@@ -16,6 +16,10 @@ public class Storage {
 		space = 2000000000;
 	}
 	
+	public ArrayList<Chunk> getStoredChunks() {
+		return storedChunks;
+	}
+	
 	boolean backupChunk(Chunk chunkToStore) {
 		for(int i = 0; i < storedChunks.size(); i++) {
 			if(storedChunks.get(i).getFileId().equals(chunkToStore.getFileId()) && storedChunks.get(i).getChunkNo() == chunkToStore.getChunkNo()) {

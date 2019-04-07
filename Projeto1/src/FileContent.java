@@ -33,6 +33,10 @@ public class FileContent {
 	public ArrayList<Chunk> getChunks(){
 		return chunks;
 	}
+	
+	public int getReplicationDegree() {
+		return replicationDegree;
+	}
 
 	private void hashIdentifier() {
 		String fileInfo = file.getName() + "/" + file.getAbsolutePath() + "/" + file.lastModified();

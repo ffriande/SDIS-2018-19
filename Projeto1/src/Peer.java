@@ -169,7 +169,42 @@ public class Peer implements RemoteInterface {
     
     @Override
     public void retrieveStateInfo() throws RemoteException {
+    	System.out.println("RETRIEVING INFO FOR PEER " + unique_id);
     	
+    	System.out.println("FILES WHOSE BACKUP IT INITIATED:");
+    	
+    	for(int i=0; i < storage.getFiles().size(); i++) {
+    		FileContent file = storage.getFiles().get(i);
+    		
+    		System.out.println("-------------------------");
+    		
+    		System.out.println("FILE PATHNAME: " + file.getFile().getPath());
+    		System.out.println("BACKUP SERVICE ID OF THE FILE: " + file.getIdentifier());
+    		System.out.println("DESIRED REPLICATION DEGREE: " + file.getReplicationDegree());
+    		
+    		for(int j = 0; j < file.getChunks().size(); j++) {
+    			Chunk chunk = file.getChunks().get(j);			
+                System.out.println("CHUNK ID: " + chunk.getChunkNo());
+                String uniqueChunkIdentifier = file.getIdentifier() + "/" + "chunk" + chunk.getChunkNo();
+                System.out.println("CHUNK PERCEIVED REPLICATION DEGREE: " + storage.getChunkOccurences().get(uniqueChunkIdentifier));
+    		}
+    		
+    		System.out.println("-------------------------");
+    	}
+    	
+    	System.out.println("FOR EACH CHUNK IT STORES:");
+		
+		for(int j = 0; j < storage.getStoredChunks().size(); j++) {
+			
+			System.out.println("-------------------------");
+			
+			Chunk chunk = storage.getStoredChunks().get(j);			
+            System.out.println("CHUNK ID: " + chunk.getChunkNo());
+            String uniqueChunkIdentifier = chunk.getFileId() + "/" + "chunk" + chunk.getChunkNo();
+            System.out.println("CHUNK PERCEIVED REPLICATION DEGREE: " + storage.getChunkOccurences().get(uniqueChunkIdentifier));
+            
+            System.out.println("-------------------------");
+		}
     }
 
 }
