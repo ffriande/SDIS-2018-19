@@ -39,7 +39,7 @@ public class ChannelBackup implements Runnable {
 	@Override
 	public void run() {
 
-        byte[] buf = new byte[256];
+        byte[] buf = new byte[65507];
 
         try {
 

@@ -14,6 +14,10 @@ public class Chunk {
     	return fileId;
     }
     
+    public void setFileId(String msg) {
+    	fileId = msg;
+    }
+    
     public int getSize() {
     	return size;
     }

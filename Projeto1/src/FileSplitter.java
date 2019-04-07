@@ -84,6 +84,7 @@ public class FileSplitter {
 			while ((bytesAmount = bis.read(buffer)) > 0) {
 				
 				Chunk newChunk = new Chunk(chunkNo, buffer, bytesAmount);
+				newChunk.setFileId(this.getIdentifier());
 				this.chunks.add(newChunk);
 				
 				chunkNo++;

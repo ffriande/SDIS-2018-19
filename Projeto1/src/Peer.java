@@ -97,6 +97,12 @@ public class Peer implements RemoteInterface {
         for(int i=0;i<chunks.size();i++){
             String header = "PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree+ " " 
             + CR + LF + CR + LF + chunks.get(i).getBody();
+            
+            String uniqueChunkIdentifier = file.getIdentifier() + "/" + "chunk" + chunks.get(i).getChunkNo();
+            
+            if (!storage.getChunkOccurences().containsKey(uniqueChunkIdentifier)) {
+                Peer.getStorage().getChunkOccurences().put(uniqueChunkIdentifier, 0);
+            }
 
             System.out.println("PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree);
         

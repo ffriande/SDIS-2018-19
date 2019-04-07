@@ -15,8 +15,8 @@ public class Storage {
 	
 	boolean backupChunk(Chunk chunkToStore) {
 		for(int i = 0; i < storedChunks.size(); i++) {
-			if(storedChunks.get(i).getFileId() == chunkToStore.getFileId() && storedChunks.get(i).getChunkNo() == chunkToStore.getChunkNo()) {
-				System.err.println("Chunk already stored!");
+			if(storedChunks.get(i).getFileId().equals(chunkToStore.getFileId()) && storedChunks.get(i).getChunkNo() == chunkToStore.getChunkNo()) {
+				System.err.println("Chunk already stored! " + storedChunks.get(i).getFileId() + " " + storedChunks.get(i).getChunkNo());
 				return false;
 			}
 		}
