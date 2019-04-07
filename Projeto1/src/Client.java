@@ -43,7 +43,7 @@ public class Client {
             	
             	String filepath = args[3];
             	
-            	stub.restore(filepath);
+            	stub.delete(filepath);
             	
             	return;
             }

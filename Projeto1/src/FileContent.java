@@ -92,6 +92,10 @@ public class FileContent {
 		}
 	}
 	
+	public File getFile() {
+		return file;
+	}
+	
 	public String getIdentifier() {
 		return identifier;
 	}

@@ -1,3 +1,4 @@
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,6 +11,7 @@ public class Storage {
 	
 	public Storage() {
 		storedChunks = new ArrayList<Chunk>();
+		files = new ArrayList<FileContent>();
 		chunkOccurences = new ConcurrentHashMap<String, Integer>();
 		space = 2000000000;
 	}
@@ -45,6 +47,38 @@ public class Storage {
 	
 	int getSpace() {
 		return space;
+	}
+	
+	public void removeChunkOcurrence(String fileId, int chunkNo) {
+		String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNo;
+		this.chunkOccurences.remove(uniqueChunkIdentifier);
+	}
+	
+	public void deleteStoredChunk(String fileId) {
+		Chunk chunkToDelete = null;
+		boolean delete = false;
+		
+		for(int i=0; i < this.storedChunks.size(); i++) {
+			chunkToDelete = this.storedChunks.get(i);
+			
+			if(chunkToDelete.getFileId().equals(fileId)) {
+				delete = true;
+				String path = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkToDelete.getChunkNo();
+				File fileToDelete = new File(path);
+				
+				//remove from disk
+				fileToDelete.delete();
+			}
+		}
+		
+		//remove from stored chunks
+		if(delete == true) {
+			this.storedChunks.remove(chunkToDelete);
+		}
+	}
+	
+	public ArrayList<FileContent> getFiles(){
+		return files;
 	}
 
 	public void addStoredFile(FileContent file) {

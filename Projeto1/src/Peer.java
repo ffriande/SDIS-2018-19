@@ -135,7 +135,31 @@ public class Peer implements RemoteInterface {
     
     @Override
     public void delete(String path) throws RemoteException {
-    	
+    	for(int i=0;i<storage.getFiles().size();i++) {
+    		
+    		FileContent file = storage.getFiles().get(i);
+    		
+    		if(file.getFile().getPath().equals(path)) {
+    			
+    			//sending an arbitrary amount of times to ensure all space used is deleted
+    			for(int z=0; z<40; z++) {
+        			String header = "DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + CR + LF + CR + LF;
+        			System.out.println("DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier());
+        			
+        			SendMessage sender = new SendMessage(header.getBytes(), "MC");
+        			threadPool.execute(sender);
+    			}
+    			
+        		for(int j=0; j<file.getChunks().size(); j++) {
+        			Chunk chunkToDelete = file.getChunks().get(j);
+        			storage.removeChunkOcurrence(file.getIdentifier(), chunkToDelete.getChunkNo());
+        		}
+        		
+        		storage.getFiles().remove(i);
+        		break;
+    		}
+   
+    	}
     }
     
     @Override

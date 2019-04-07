@@ -41,6 +41,13 @@ public class HandleMessage implements Runnable {
         		System.out.println("Received STORE for chunk " + uniqueChunkIdentifier);
         	}
         }
+        
+        else if(msgParts[0].equals("DELETE")) {
+        	if(Peer.getUniqueId() != senderPeerID) {
+        		Peer.getStorage().deleteStoredChunk(fileId);
+        		System.out.println("Received DELETE for chunk " + uniqueChunkIdentifier);
+        	}
+        }
 	}
 
 }
