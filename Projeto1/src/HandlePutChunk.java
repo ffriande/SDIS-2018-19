@@ -45,7 +45,7 @@ public class HandlePutChunk implements Runnable {
             	
             	String pathToBackup = "peer" + Peer.getUniqueId() + "/" + "backup";
             	
-            	String pathToRestore = "peer" + Peer.getUniqueId() + "/" + "restore";
+            	String pathToRestore = "peer" + Peer.getUniqueId() + "/" + "restored";
             	
             	File subdirectoryBackup = new File(pathToBackup);
             	

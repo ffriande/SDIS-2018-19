@@ -7,13 +7,13 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 
 public class ChannelRestore implements Runnable {
-	
-	private String MDRAddress;
-	private int port;
-	private InetAddress address;
 
-	ChannelRestore(String MDR_addr, int MDRPort){
-		
+    private String MDRAddress;
+    private int port;
+    private InetAddress address;
+
+    ChannelRestore(String MDR_addr, int MDRPort) {
+
         try {
             MDRAddress = MDR_addr;
             port = MDRPort;
@@ -21,10 +21,10 @@ public class ChannelRestore implements Runnable {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        
-	}
 
-	public void sendMessage(byte[] msg) {
+    }
+
+    public void sendMessage(byte[] msg) {
 
         try (DatagramSocket sender = new DatagramSocket()) {
             DatagramPacket message = new DatagramPacket(msg, msg.length, address, port);
@@ -35,11 +35,11 @@ public class ChannelRestore implements Runnable {
             ex.printStackTrace();
         }
     }
-	
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
-		byte[] buf = new byte[65507];
+
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        byte[] buf = new byte[65507];
 
         try {
 
@@ -52,13 +52,13 @@ public class ChannelRestore implements Runnable {
                 receiver.receive(msg);
 
                 byte[] otherbuf = new byte[65507];
-                
+
                 otherbuf = Arrays.copyOf(buf, msg.getLength());
-                
+
                 Peer.getExecutor().execute(new HandleMessage(otherbuf));
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-	}//TODO:reenviava sempre pq repdegree maior que no de chunks
+    }
 }

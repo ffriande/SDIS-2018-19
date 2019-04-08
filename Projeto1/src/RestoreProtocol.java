@@ -14,19 +14,19 @@ public class RestoreProtocol implements Runnable {
         chunksToRestore = new ArrayList<Chunk>();
     }
 
-    public void addChunkToRestore(Chunk chunk){
-        this.chunksToRestore.add(chunk);
-    }
-
     @Override
     public void run() {
-        if (restoreFile())System.out.println("File restored");
-        else System.out.println("ERROR: File not restored");
-   }
+        if (restoreFile())
+            System.out.println("File restored");
+        else
+            System.out.println("ERROR: File not restored");
+    }
 
     private boolean restoreFile() {
-        String filePath = Peer.getUniqueId() + "/" + "restore" + "/" + this.file_name;
+        String filePath = "peer" + Peer.getUniqueId() + "/" + "restored" + "/" + this.file_name;
         File file = new File(filePath);
+        System.out.println(file.getAbsolutePath()+" -> filePath");
+
         byte[] body;
 
         try {
@@ -36,18 +36,17 @@ public class RestoreProtocol implements Runnable {
             }
 
             FileOutputStream fos = new FileOutputStream(file, true);
-            System.out.println("OI1\n\n");
 
             for (Chunk c : chunksToRestore) {
-                String chunkPath = Peer.getUniqueId() + "/" + "backup" + "/" + c.getFileId() + "/" + "chunk" + c.getChunkNo();
+                // String chunkPath = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + c.getFileId() + "/" + "chunk"
+                //         + c.getChunkNo();
 
                 File chunkFile = new File(chunkPath);
 
+                System.out.println(chunkPath);
                 if (!chunkFile.exists()) {
-                    System.out.println("OI2\n\n");
-                    System.out.println("chunkPath");
-                   
-                   
+                    System.out.println("YOOOO\n\n");
+
                     return false;
 
                 }

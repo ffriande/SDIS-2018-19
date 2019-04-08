@@ -12,32 +12,41 @@ public class HandleGetChunk implements Runnable {
     public HandleGetChunk(String fileId, int chunkNr) {
         this.fileId = fileId;
         this.chunkNr = chunkNr;
+        System.out.println("CREATED HANDLEGETCHUNK");
     }
 
     @Override
     public void run() {
+        
         for (int i = 0; i < Peer.getStorage().getStoredChunks().size(); i++) {
             if (isSameChunk(Peer.getStorage().getStoredChunks().get(i).getFileId(), Peer.getStorage().getStoredChunks().get(i).getChunkNo()) && !isAbortSend()) {
                 String header = "CHUNK " + "1.0" + " " + Peer.getUniqueId() + " " + this.fileId + " " + this.chunkNr + "\r\n\r\n";
-
+              
+                byte[] asciiHeader = header.getBytes();
+                String chunkPath = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk"+ chunkNr;
                 try {
-                    byte[] asciiHeader = header.getBytes("US-ASCII");
-
-                    String chunkPath = Peer.getUniqueId() + "/" + fileId + "_" + chunkNr;
-
+                    
                     File file = new File(chunkPath);
+                    if (!file.exists()) {
+                        return;
+                    }
                     byte[] body = new byte[(int) file.length()];
                     FileInputStream in = new FileInputStream(file);
                     in.read(body);
+                    System.out.println(file.getAbsolutePath()+" -> chunkPath");
 
                     byte[] message = new byte[asciiHeader.length + body.length];
                     System.arraycopy(asciiHeader, 0, message, 0, asciiHeader.length);
                     System.arraycopy(body, 0, message, asciiHeader.length, body.length);
 
                     SendMessage sendThread = new SendMessage(message, "MDR");
-                    System.out.println("Sent" + "CHUNK " + "1.0" + " " + Peer.getUniqueId() + " " + this.fileId + " " + this.chunkNr);
+                    System.out.println("Sent " + "CHUNK " + "1.0" + " " + Peer.getUniqueId() + " " + this.fileId + " " + this.chunkNr);
                     Random random = new Random();
-                    Peer.getExecutor().schedule(sendThread, random.nextInt(401), TimeUnit.MILLISECONDS);
+
+                    //TODO: como receber em restore protocol??
+
+                    Peer.getExecutor().schedule(sendThread, random.nextInt(400), TimeUnit.MILLISECONDS);
+                            
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

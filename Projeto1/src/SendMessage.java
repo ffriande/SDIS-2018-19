@@ -18,6 +18,10 @@ public class SendMessage implements Runnable {
 		if(channel.equals("MC")) {
 			Peer.getMC().sendMessage(this.message);
 		}
+
+		if(channel.equals("MDR")) {
+			Peer.getMDR().sendMessage(this.message);
+		}
 	}
 
 }
