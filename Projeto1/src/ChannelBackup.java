@@ -44,11 +44,8 @@ public class ChannelBackup implements Runnable {
         try {
 
             MulticastSocket receiver = new MulticastSocket(port);
-            
-            System.out.println(address.getHostAddress());
-            
             receiver.joinGroup(address);
-
+            System.out.println("MDB:  "+ address.getHostAddress());
             while (true) {
                 DatagramPacket msg = new DatagramPacket(buf, buf.length);
                 receiver.receive(msg);

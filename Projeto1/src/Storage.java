@@ -87,5 +87,13 @@ public class Storage {
 
 	public void addStoredFile(FileContent file) {
         this.files.add(file);
-    }
+	}
+	
+	public FileContent constainsFile(String path){
+		for (int i = 0; i < this.files.size(); i++) {
+			if (files.get(i).getFile().getPath().equals(path)) 
+				return files.get(i);
+		}
+	return null;
+	}
 }

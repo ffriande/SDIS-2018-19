@@ -45,6 +45,7 @@ public class ChannelControl implements Runnable{
 
             MulticastSocket receiver = new MulticastSocket(port);
             receiver.joinGroup(address);
+            System.out.println("MC:  " + address.getHostAddress());
 
             while (true) {
                 DatagramPacket msg = new DatagramPacket(buf, buf.length);
