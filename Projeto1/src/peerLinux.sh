@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-javac src/*.java
+javac *.java
 echo "Compiled code."
 
 # get peerID or use default
@@ -16,4 +16,4 @@ ACCESSPOINT="$3"
 ACCESSPOINT=${ACCESSPOINT:-"peer1"}
 
 #Usage: <protocolVersion> <peerId> <serviceAccessPoint> <mccIP> <mccPort> <mdbIp> <mdbPort> <mdrIp> <mdrPort>
-java -cp ../Projeto1/src Peer $VERSION $PEERID $ACCESSPOINT 224.0.0.1 8001 224.0.0.2 8002 224.0.0.3 8003
+java Peer $VERSION $PEERID $ACCESSPOINT 224.0.0.1 8001 224.0.0.2 8002 224.0.0.3 8003
