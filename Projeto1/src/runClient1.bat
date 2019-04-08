@@ -1,1 +1,0 @@
-java TestApp localhost p1 BACKUP test1.png
