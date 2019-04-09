@@ -3,11 +3,13 @@ public class Chunk {
 	private String fileId;
 	private byte[] body;
 	private int size;
+	private int replicationDegree;
 	
-    public Chunk(int nr, byte[] body, int size) {
+    public Chunk(int nr, byte[] body, int size, int replicationDegree) {
         this.chunkNo = nr;
         this.body = body;
         this.size=size;
+        this.replicationDegree = replicationDegree;
     }
 
     public String getFileId() {
@@ -30,4 +32,7 @@ public class Chunk {
         return this.body;
     }
 
+    public int getReplicationDegree() {
+    	return replicationDegree;
+    }
 }

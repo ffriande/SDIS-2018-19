@@ -87,7 +87,7 @@ public class FileContent {
 			
 			while ((bytesAmount = bis.read(buffer)) > 0) {
 				
-				Chunk newChunk = new Chunk(chunkNo, buffer, bytesAmount);
+				Chunk newChunk = new Chunk(chunkNo, buffer, bytesAmount, replicationDegree);
 				newChunk.setFileId(this.getIdentifier());
 				this.chunks.add(newChunk);
 				
