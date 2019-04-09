@@ -38,8 +38,8 @@ public class RestoreProtocol implements Runnable {
             FileOutputStream fos = new FileOutputStream(file, true);
 
             for (Chunk c : chunksToRestore) {
-                // String chunkPath = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + c.getFileId() + "/" + "chunk"
-                //         + c.getChunkNo();
+                 String chunkPath = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + c.getFileId() + "/" + "chunk"
+                         + c.getChunkNo();
 
                 File chunkFile = new File(chunkPath);
 

@@ -74,7 +74,6 @@ public class HandlePutChunk implements Runnable {
             }
             
             String header = "STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + CR + LF + CR + LF;
-            //TODO: pq é que a versao aqui e 1.0?
             System.out.println("STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber);
             
             Peer.getStorage().countStoredOccurence(uniqueChunkIdentifier);
