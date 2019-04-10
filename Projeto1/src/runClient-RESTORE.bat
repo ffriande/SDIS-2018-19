@@ -1,1 +1,1 @@
-java TestApp localhost p1 RESTORE test1.png
+java TestApp p1 RESTORE test1.png
