@@ -220,7 +220,7 @@ public class Peer implements RemoteInterface {
     			
     			String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNo;
     			
-    			storage.getBlackListedChunks().add(uniqueChunkIdentifier);
+    			storage.getBlackListedChunks().put(uniqueChunkIdentifier, unique_id);
     			
     			String header = "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo + " " + CR + LF + CR + LF;
                 System.out.println("Sent " + "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo);

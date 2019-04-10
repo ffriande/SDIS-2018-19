@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Storage {
@@ -7,7 +8,7 @@ public class Storage {
 	private ArrayList<FileContent> files;
 	private ArrayList<Chunk> storedChunks;
 	private ArrayList<Chunk> restoredChunks;
-	private ArrayList<String> blackListedChunks;
+	private HashMap<String, Integer> blackListedChunks;
 	private ConcurrentHashMap<String, Integer> chunkOccurences;
 	private int space;
 	
@@ -15,7 +16,7 @@ public class Storage {
 		storedChunks = new ArrayList<Chunk>();
 		restoredChunks = new ArrayList<Chunk>();
 		files = new ArrayList<FileContent>();
-		blackListedChunks = new ArrayList<String>();
+		blackListedChunks = new HashMap<String, Integer>();
 		chunkOccurences = new ConcurrentHashMap<String, Integer>();
 		space = 2000000000;
 	}
@@ -24,7 +25,7 @@ public class Storage {
 		return storedChunks;
 	}
 	
-	public ArrayList<String> getBlackListedChunks() {
+	public HashMap<String, Integer> getBlackListedChunks() {
 		return blackListedChunks;
 	}
 	

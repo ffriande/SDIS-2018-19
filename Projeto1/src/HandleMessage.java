@@ -105,7 +105,7 @@ public class HandleMessage implements Runnable {
         	//havera uma lista de chunks blacklisted que e feita a nivel do peer que foi reclaimed a medida que ele apaga chunks, por cada putchunk especial que ele
         	//recebe tera de verificar se esse chunk esta na lista, nao fara nada se estiver, mas vai remover da lista para que depois ela possa ficar a zeros.
         	
-        	if(!Peer.getStorage().getBlackListedChunks().contains(uniqueChunkIdentifier)) {
+        	if(!Peer.getStorage().getBlackListedChunks().containsKey(uniqueChunkIdentifier) || Peer.getStorage().getBlackListedChunks().get(uniqueChunkIdentifier) != Peer.getUniqueId()) {
             	if(!Peer.getStorage().getChunkOccurences().contains(uniqueChunkIdentifier)) {
             		Peer.getStorage().getChunkOccurences().put(uniqueChunkIdentifier, 0);
             	}
