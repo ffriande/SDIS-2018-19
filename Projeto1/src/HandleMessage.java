@@ -94,10 +94,28 @@ public class HandleMessage implements Runnable {
             		
             		if(localCount < chunk.getReplicationDegree()) {	
             			Random random = new Random();
-            			Peer.getExecutor().schedule(new BackupSubProtocol(fileId, chunkNumber, chunk.getReplicationDegree(), chunk.getBody()), random.nextInt(400), TimeUnit.MILLISECONDS);
+            			Peer.getExecutor().schedule(new BackupSubProtocol(Peer.getUniqueId(), fileId, chunkNumber, chunk.getReplicationDegree(), chunk.getBody()), random.nextInt(400), TimeUnit.MILLISECONDS);
             		}
         		}
         	}
+        }
+        
+        else if(msgParts[0].equals("PUTCHUNKREMOVED")) {
+        	
+        	//havera uma lista de chunks blacklisted que e feita a nivel do peer que foi reclaimed a medida que ele apaga chunks, por cada putchunk especial que ele
+        	//recebe tera de verificar se esse chunk esta na lista, nao fara nada se estiver, mas vai remover da lista para que depois ela possa ficar a zeros.
+        	
+        	if(!Peer.getStorage().getBlackListedChunks().contains(uniqueChunkIdentifier)) {
+            	if(!Peer.getStorage().getChunkOccurences().contains(uniqueChunkIdentifier)) {
+            		Peer.getStorage().getChunkOccurences().put(uniqueChunkIdentifier, 0);
+            	}
+            	
+            	if(Peer.getUniqueId() != senderPeerID) {
+	            	Random random = new Random();
+	            	Peer.getExecutor().schedule(new HandlePutChunk(message), random.nextInt(400), TimeUnit.MILLISECONDS);
+            	}
+        	}
+        	
         }
 	}
 

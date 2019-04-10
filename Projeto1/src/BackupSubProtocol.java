@@ -6,22 +6,24 @@ public class BackupSubProtocol implements Runnable {
 	int chunkNumber;
 	int replicationDegree;
 	byte[] chunkBody;
+	int peerId;
     private int CR = 0xD;   
 	private int LF = 0xA;
 	
-	public BackupSubProtocol(String fileId, int chunkNumber, int replicationDegree, byte[] chunkBody) {
+	public BackupSubProtocol(int reclaimedPeerId, String fileId, int chunkNumber, int replicationDegree, byte[] chunkBody) {
 		this.fileId = fileId;
 		this.chunkNumber = chunkNumber;
 		this.replicationDegree = replicationDegree;
 		this.chunkBody = chunkBody;
+		this.peerId = reclaimedPeerId;
 	}
 	
 	@Override
 	public void run() {
-        String header = "PUTCHUNK " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + replicationDegree+ " " 
+        String header = "PUTCHUNKREMOVED " + "1.0" + " " + peerId + " " + fileId + " " + chunkNumber + " " + replicationDegree+ " " 
         + CR + LF + CR + LF + chunkBody;
         
-        System.out.println("PUTCHUNK " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + replicationDegree);
+        System.out.println("PUTCHUNKREMOVED " + "1.0" + " " + peerId + " " + fileId + " " + chunkNumber + " " + replicationDegree);
 
         String key = fileId + "/" + "chunk" + chunkNumber;
         

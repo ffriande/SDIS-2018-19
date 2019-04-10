@@ -7,6 +7,7 @@ public class Storage {
 	private ArrayList<FileContent> files;
 	private ArrayList<Chunk> storedChunks;
 	private ArrayList<Chunk> restoredChunks;
+	private ArrayList<String> blackListedChunks;
 	private ConcurrentHashMap<String, Integer> chunkOccurences;
 	private int space;
 	
@@ -14,12 +15,28 @@ public class Storage {
 		storedChunks = new ArrayList<Chunk>();
 		restoredChunks = new ArrayList<Chunk>();
 		files = new ArrayList<FileContent>();
+		blackListedChunks = new ArrayList<String>();
 		chunkOccurences = new ConcurrentHashMap<String, Integer>();
 		space = 2000000000;
 	}
 	
 	public ArrayList<Chunk> getStoredChunks() {
 		return storedChunks;
+	}
+	
+	public ArrayList<String> getBlackListedChunks() {
+		return blackListedChunks;
+	}
+	
+	public int occupiedChunkSpace() {
+		
+		int amountOccupied = 0;
+		
+		for(int i=0; i<this.storedChunks.size(); i++) {
+			amountOccupied+=storedChunks.get(i).getSize();
+		}
+		
+		return amountOccupied;
 	}
 	
 	public ArrayList<Chunk> getRestoredChunks() {

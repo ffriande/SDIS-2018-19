@@ -190,11 +190,13 @@ public class Peer implements RemoteInterface {
     @Override
     public void reclaim(int space) throws RemoteException {
     	
+    	int kByteSpaceToByte = space * 1000;
+    	
     	System.out.println("OLD STORAGE SPACE " + storage.getSpace());
     	
     	// difference between available space and space to reclaim
     	int storageSpace = storage.getSpace();
-    	int deltaSpace = storageSpace - space;
+    	int deltaSpace = storageSpace - kByteSpaceToByte;
     	
     	// there is more space to reclaim than what is available
     	if(deltaSpace < 0) {
@@ -209,12 +211,16 @@ public class Peer implements RemoteInterface {
     		
     		Chunk chunk = null;
     		
-    		while(deletedSpaceSoFar < space && chunkIter.hasNext()) {
+    		while(deletedSpaceSoFar < kByteSpaceToByte && chunkIter.hasNext()) {
     		    chunk = chunkIter.next();
     			deletedSpaceSoFar += chunk.getSize();
     			
     			String fileId = chunk.getFileId();
     			int chunkNo = chunk.getChunkNo();
+    			
+    			String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNo;
+    			
+    			storage.getBlackListedChunks().add(uniqueChunkIdentifier);
     			
     			String header = "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo + " " + CR + LF + CR + LF;
                 System.out.println("Sent " + "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo);
@@ -256,7 +262,7 @@ public class Peer implements RemoteInterface {
     		
     		for(int j = 0; j < file.getChunks().size(); j++) {
     			Chunk chunk = file.getChunks().get(j);			
-                System.out.println("CHUNK ID: " + chunk.getChunkNo());
+                System.out.println("CHUNK ID: " + chunk.getFileId() + " " + chunk.getChunkNo());
                 String uniqueChunkIdentifier = file.getIdentifier() + "/" + "chunk" + chunk.getChunkNo();
                 System.out.println("CHUNK PERCEIVED REPLICATION DEGREE: " + storage.getChunkOccurences().get(uniqueChunkIdentifier));
     		}
@@ -271,12 +277,22 @@ public class Peer implements RemoteInterface {
 			System.out.println("-------------------------");
 			
 			Chunk chunk = storage.getStoredChunks().get(j);			
-            System.out.println("CHUNK ID: " + chunk.getChunkNo());
+            System.out.println("CHUNK ID: " + chunk.getFileId() + " " + chunk.getChunkNo());
+            
+            System.out.println("CHUNK SIZE (KB): " + convertKByte(chunk.getSize()));
+            
             String uniqueChunkIdentifier = chunk.getFileId() + "/" + "chunk" + chunk.getChunkNo();
             System.out.println("CHUNK PERCEIVED REPLICATION DEGREE: " + storage.getChunkOccurences().get(uniqueChunkIdentifier));
             
             System.out.println("-------------------------");
 		}
+			
+		System.out.println("STORAGE CAPACITY (KB): " + convertKByte(storage.getSpace()));
+		System.out.println("AMOUNT OF STORAGE USED TO BACKUP CHUNKS (KB): " + convertKByte(storage.occupiedChunkSpace()));
+    }
+    
+    public double convertKByte(int num) {
+    	return  (double) num/1000;
     }
 
 }
