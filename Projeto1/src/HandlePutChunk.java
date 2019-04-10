@@ -50,8 +50,6 @@ public class HandlePutChunk implements Runnable {
 		
 		if(Peer.getStorage().getSpace() >= chunkBody.length) {
 			Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkBody.length,  replicationDegree);
-			//System.out.println("chunkBody.length--->>>"+chunkBody.length);
-	 		String msg1 = new String(chunkBody, 0, chunkBody.length);
 			chunk.setFileId(fileId);
 			
 			if(!Peer.getStorage().backupChunk(chunk)) {
@@ -62,8 +60,6 @@ public class HandlePutChunk implements Runnable {
             	
             	String pathToBackup = "peer" + Peer.getUniqueId() + "/" + "backup";
             	
-            //	String pathToRestore = "peer" + Peer.getUniqueId() + "/" + "restored";
-            	
             	File subdirectoryBackup = new File(pathToBackup);
             	
             	if(!subdirectoryBackup.exists()) {
@@ -73,13 +69,7 @@ public class HandlePutChunk implements Runnable {
         		String pathToBackupFile = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId;
         		File pathToFile = new File(pathToBackupFile);
         		pathToFile.mkdir();
-            	
-            	// File subdirectoryRestore = new File(pathToRestore);
-            	
-            	// if(!subdirectoryRestore.exists()) {
-            	// 	subdirectoryRestore.mkdir();
-            	// }
-            	
+
                 String filename = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkNumber;
 
                 try (FileOutputStream fos = new FileOutputStream(filename)) {

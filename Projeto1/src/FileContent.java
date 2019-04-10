@@ -75,25 +75,46 @@ public class FileContent {
 	}
 
 	private void splitIntoChuncks() throws FileNotFoundException, IOException {
-	    int chunkNo = 1;
-	
-		int sizeOfChunks = 64000;
-		byte[] buffer = new byte[sizeOfChunks];
-		
-		try (FileInputStream fis = new FileInputStream(this.file); 
-			BufferedInputStream bis = new BufferedInputStream(fis)) {
-		
-			int bytesAmount = 0;
-			
-			while ((bytesAmount = bis.read(buffer)) > 0) {
-				//System.out.println("bytesAmount->>>"+bytesAmount);	
-				Chunk newChunk = new Chunk(chunkNo, buffer, bytesAmount, replicationDegree);
-				newChunk.setFileId(this.getIdentifier());
-				this.chunks.add(newChunk);
-				
-				chunkNo++;
-			}
-		}
+        int chunkNumber = 1, totalBytesRead = 0;
+        int file_size = (int) this.file.length();
+        
+        FileInputStream istream = null;
+        try {
+            istream = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            System.out.println("Can't read file: " + this.file.getName());
+            return;
+        }
+        
+        while (totalBytesRead < file_size) {
+            int chunkSize = Math.min(64000, (file_size - totalBytesRead));
+            
+            byte[] chunkBody = new byte[chunkSize]; 
+            
+            try {
+                totalBytesRead += istream.read(chunkBody, 0, chunkSize);
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            
+            Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkSize, replicationDegree);
+            chunk.setFileId(this.getIdentifier());
+            this.chunks.add(chunk);
+            chunkNumber++;
+        }
+        
+        if ((file_size % 64000) == 0) {
+        	//"If the file size is a multiple of the chunk size, the last chunk has size 0."
+            Chunk chunk = new Chunk(chunkNumber+1, new byte[0], 0, replicationDegree);
+            chunk.setFileId(this.getIdentifier());
+            this.chunks.add(chunk);
+        }  
+
+        try {
+            istream.close();
+        } catch (IOException exp) {
+            exp.printStackTrace();
+        }
 	}
 	
 	public File getFile() {
