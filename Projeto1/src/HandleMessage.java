@@ -1,3 +1,4 @@
+import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -11,9 +12,9 @@ public class HandleMessage implements Runnable {
 	
 	@Override
 	public void run() {
-        String msg = new String(message, 0, message.length);
+        String msg = new String(message, StandardCharsets.UTF_8);
       
-        String splitMsg = msg.trim();
+		String splitMsg = msg.trim();
         String[] msgParts = splitMsg.split(" ");
         
         String fileId = msgParts[3];
@@ -57,7 +58,18 @@ public class HandleMessage implements Runnable {
         		Peer.getStorage().deleteStoredChunk(fileId);
         		System.out.println("Received DELETE for chunk " + uniqueChunkIdentifier);
         	}
-        }
+		}
+		
+		else if(msgParts[0].equals("CHUNK")) {
+			if(Peer.getUniqueId() != senderPeerID) {
+				byte[] chunkBody = msgParts[5].getBytes();
+				Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkBody.length);
+				chunk.setFileId(fileId);
+				Peer.getStorage().getRestoredChunks().add(chunk);
+				System.out.println("Received CHUNK " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
+			}
+			
+		}
 	}
 
 }

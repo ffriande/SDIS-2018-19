@@ -2,16 +2,22 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+
 
 public class RestoreProtocol implements Runnable {
 
     private String file_name;
-    ArrayList<Chunk> chunksToRestore;
+    ArrayList<String> chunksToRestore;
 
     public RestoreProtocol(String file_name) {
         this.file_name = file_name;
-        chunksToRestore = new ArrayList<Chunk>();
+        chunksToRestore = new ArrayList<String>();
+    }
+
+    public void addChunkToRestore(String chunk) {
+        this.chunksToRestore.add(chunk);
     }
 
     @Override
@@ -25,44 +31,48 @@ public class RestoreProtocol implements Runnable {
     private boolean restoreFile() {
         String filePath = "peer" + Peer.getUniqueId() + "/" + "restored" + "/" + this.file_name;
         File file = new File(filePath);
-        System.out.println(file.getAbsolutePath()+" -> filePath");
 
-        byte[] body;
+        // byte[] body;
 
         try {
             if (!file.exists()) {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
-            }
+            
 
-            FileOutputStream fos = new FileOutputStream(file, true);
+                ArrayList<Chunk> chunksRestored=new ArrayList<Chunk>();
+                
+                for (int j = 0; j < chunksToRestore.size(); j++) {
+                    for (int i = 0; i < Peer.getStorage().getRestoredChunks().size(); i++) {
+                        if (chunksToRestore.get(j).equals(Peer.getStorage().getRestoredChunks().get(i).getFileId() + "-"
+                                + Peer.getStorage().getRestoredChunks().get(i).getChunkNo())){
+                                    chunksRestored.add(Peer.getStorage().getRestoredChunks().get(i));
+                                
+                                    break;
+                                }
+                    }
+                }
 
-            for (Chunk c : chunksToRestore) {
-                // String chunkPath = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + c.getFileId() + "/" + "chunk"
-                //         + c.getChunkNo();
+                FileOutputStream fos = new FileOutputStream(file, true);
+                // ir buscar ao storage
+                for (Chunk c : chunksRestored) {
 
-                File chunkFile = new File(chunkPath);
+                //  body = c.getBody();
+                    byte[] body = new byte[c.getBody().length-16];
+                    System.arraycopy(c.getBody(), 16, body, 0, body.length);
+                    String msg = new String(body, 0, body.length);
+                    System.out.println(c.getChunkNo()+" -> "+msg);
 
-                System.out.println(chunkPath);
-                if (!chunkFile.exists()) {
-                    System.out.println("YOOOO\n\n");
-
-                    return false;
+                    fos.write(body);
 
                 }
 
-                body = new byte[(int) chunkFile.length()];
-
-                FileInputStream in = new FileInputStream(chunkFile);
-
-                in.read(body);
-                fos.write(body);
-
-                chunkFile.delete();
+                fos.close();
+                return true;
             }
-
-            fos.close();
-            return true;
+        else {
+            System.out.println("\nFile has already been restored\n\n");
+        }
         } catch (IOException e) {
             e.printStackTrace();
         }

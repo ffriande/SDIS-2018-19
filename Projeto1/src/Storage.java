@@ -6,11 +6,13 @@ public class Storage {
 
 	private ArrayList<FileContent> files;
 	private ArrayList<Chunk> storedChunks;
+	private ArrayList<Chunk> restoredChunks;
 	private ConcurrentHashMap<String, Integer> chunkOccurences;
 	private int space;
 	
 	public Storage() {
 		storedChunks = new ArrayList<Chunk>();
+		restoredChunks = new ArrayList<Chunk>();
 		files = new ArrayList<FileContent>();
 		chunkOccurences = new ConcurrentHashMap<String, Integer>();
 		space = 2000000000;
@@ -20,6 +22,9 @@ public class Storage {
 		return storedChunks;
 	}
 	
+	public ArrayList<Chunk> getRestoredChunks() {
+		return restoredChunks;
+	}
 	boolean backupChunk(Chunk chunkToStore) {
 		for(int i = 0; i < storedChunks.size(); i++) {
 			if(storedChunks.get(i).getFileId().equals(chunkToStore.getFileId()) && storedChunks.get(i).getChunkNo() == chunkToStore.getChunkNo()) {

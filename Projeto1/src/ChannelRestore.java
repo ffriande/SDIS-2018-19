@@ -29,7 +29,6 @@ public class ChannelRestore implements Runnable {
         try (DatagramSocket sender = new DatagramSocket()) {
             DatagramPacket message = new DatagramPacket(msg, msg.length, address, port);
             sender.send(message);
-            System.out.println("CHANNEL RESTORE Sent msg: " + msg);
 
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -38,6 +37,7 @@ public class ChannelRestore implements Runnable {
 
     @Override
     public void run() {
+        
         // TODO Auto-generated method stub
         byte[] buf = new byte[65507];
 

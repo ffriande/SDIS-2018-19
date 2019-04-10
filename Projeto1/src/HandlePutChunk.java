@@ -45,7 +45,7 @@ public class HandlePutChunk implements Runnable {
             	
             	String pathToBackup = "peer" + Peer.getUniqueId() + "/" + "backup";
             	
-            	String pathToRestore = "peer" + Peer.getUniqueId() + "/" + "restored";
+            //	String pathToRestore = "peer" + Peer.getUniqueId() + "/" + "restored";
             	
             	File subdirectoryBackup = new File(pathToBackup);
             	
@@ -57,11 +57,11 @@ public class HandlePutChunk implements Runnable {
         		File pathToFile = new File(pathToBackupFile);
         		pathToFile.mkdir();
             	
-            	File subdirectoryRestore = new File(pathToRestore);
+            	// File subdirectoryRestore = new File(pathToRestore);
             	
-            	if(!subdirectoryRestore.exists()) {
-            		subdirectoryRestore.mkdir();
-            	}
+            	// if(!subdirectoryRestore.exists()) {
+            	// 	subdirectoryRestore.mkdir();
+            	// }
             	
                 String filename = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkNumber;
 
