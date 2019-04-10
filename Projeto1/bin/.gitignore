@@ -12,3 +12,9 @@
 /runp3.bat
 /TestAppLinux.sh
 /bin/
+/build.bat
+/runClient-BACKUP.bat
+/runClient-RESTORE.bat
+/runPeer1.bat
+/runPeer2.bat
+/runPeer3.bat

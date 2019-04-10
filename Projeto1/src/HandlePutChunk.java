@@ -29,12 +29,18 @@ public class HandlePutChunk implements Runnable {
 		
 		String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNumber;
 		
+		// don't save if the peer already owns the chunk
+        for(int i=0; i < Peer.getStorage().getFiles().size(); i++){
+            if(Peer.getStorage().getFiles().get(i).getIdentifier().equals(fileId)) 
+                return;
+        }
+		
 		if(Peer.getStorage().getChunkOccurences().get(uniqueChunkIdentifier) >= replicationDegree) {
 			return;
 		}
 		
 		if(Peer.getStorage().getSpace() >= chunkBody.length) {
-			Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkBody.length);
+			Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkBody.length,  replicationDegree);
 			chunk.setFileId(fileId);
 			
 			if(!Peer.getStorage().backupChunk(chunk)) {
@@ -74,7 +80,6 @@ public class HandlePutChunk implements Runnable {
             }
             
             String header = "STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + CR + LF + CR + LF;
-            //TODO: pq é que a versao aqui e 1.0?
             System.out.println("STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber);
             
             Peer.getStorage().countStoredOccurence(uniqueChunkIdentifier);

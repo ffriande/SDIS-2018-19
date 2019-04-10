@@ -25,6 +25,20 @@ public class Storage {
 	public ArrayList<Chunk> getRestoredChunks() {
 		return restoredChunks;
 	}
+	public void setSpace(int num) {
+		space = num;
+	}
+	
+	public Chunk getSpecificChunk(String fileId, int chunkNo) {
+		for(int i=0; i < storedChunks.size(); i++) {
+			if(storedChunks.get(i).getFileId().equals(fileId) && storedChunks.get(i).getChunkNo() == chunkNo) {
+				return storedChunks.get(i);
+			}
+		}
+		
+		return null;
+	}
+	
 	boolean backupChunk(Chunk chunkToStore) {
 		for(int i = 0; i < storedChunks.size(); i++) {
 			if(storedChunks.get(i).getFileId().equals(chunkToStore.getFileId()) && storedChunks.get(i).getChunkNo() == chunkToStore.getChunkNo()) {
@@ -54,6 +68,15 @@ public class Storage {
 
 	}
 	
+	public void decStoredOccurence(String uniqueChunkIdentifier) {
+
+        if (Peer.getStorage().getChunkOccurences().containsKey(uniqueChunkIdentifier)) {
+            int total = this.chunkOccurences.get(uniqueChunkIdentifier) - 1;
+            this.chunkOccurences.replace(uniqueChunkIdentifier, total);
+        }
+
+	}
+	
 	int getSpace() {
 		return space;
 	}
@@ -77,11 +100,13 @@ public class Storage {
 				
 				//remove from disk
 				fileToDelete.delete();
+				break;
 			}
 		}
 		
 		//remove from stored chunks
 		if(delete == true) {
+			this.space += chunkToDelete.getSize();
 			this.storedChunks.remove(chunkToDelete);
 		}
 	}
@@ -99,6 +124,7 @@ public class Storage {
 			if (files.get(i).getFile().getPath().equals(path)) 
 				return files.get(i);
 		}
-	return null;
+		
+		return null;
 	}
 }

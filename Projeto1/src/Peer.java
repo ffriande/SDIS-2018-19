@@ -1,9 +1,11 @@
+import java.io.File;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -188,6 +190,53 @@ public class Peer implements RemoteInterface {
     @Override
     public void reclaim(int space) throws RemoteException {
     	
+    	System.out.println("OLD STORAGE SPACE " + storage.getSpace());
+    	
+    	// difference between available space and space to reclaim
+    	int storageSpace = storage.getSpace();
+    	int deltaSpace = storageSpace - space;
+    	
+    	// there is more space to reclaim than what is available
+    	if(deltaSpace < 0) {
+    		System.err.println("ERROR: There is more space to reclaim that what is available");
+    		return;
+    	}
+    	
+    	else {
+    		int deletedSpaceSoFar = 0;
+    		
+    		Iterator<Chunk> chunkIter = storage.getStoredChunks().iterator();
+    		
+    		Chunk chunk = null;
+    		
+    		while(deletedSpaceSoFar < space && chunkIter.hasNext()) {
+    		    chunk = chunkIter.next();
+    			deletedSpaceSoFar += chunk.getSize();
+    			
+    			String fileId = chunk.getFileId();
+    			int chunkNo = chunk.getChunkNo();
+    			
+    			String header = "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo + " " + CR + LF + CR + LF;
+                System.out.println("Sent " + "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo);
+                
+                byte[] headerASCII = header.getBytes();
+                SendMessage message = new SendMessage(headerASCII, "MC");
+                threadPool.execute(message);
+                
+                // delete on disk
+                String filename = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkNo;
+                File chunkFile = new File(filename);
+                chunkFile.delete();
+                
+                // delete on storage
+                Peer.getStorage().removeChunkOcurrence(fileId, chunkNo);  
+                Peer.getStorage().setSpace(storageSpace + deletedSpaceSoFar);
+                
+                chunkIter.remove();
+    		}
+    	}
+    	
+    	System.out.println("NEW STORAGE SPACE " + storage.getSpace());
     }
     
     @Override
