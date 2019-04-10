@@ -90,16 +90,8 @@ public class HandleMessage implements Runnable {
             		System.out.println("Local count: " + localCount + " " + "Rep degree: " + chunk.getReplicationDegree());
             		
             		if(localCount < chunk.getReplicationDegree()) {	
-            			
             			Random random = new Random();
-            			
-            			try {
-							Thread.sleep(random.nextInt(400));
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-            			
-            			this.backupSubProtocol(fileId, chunkNumber, chunk.getReplicationDegree(), chunk.getBody());
+            			Peer.getExecutor().schedule(new BackupSubProtocol(fileId, chunkNumber, chunk.getReplicationDegree(), chunk.getBody()), random.nextInt(400), TimeUnit.MILLISECONDS);
             		}
         		}
         	}
@@ -107,7 +99,7 @@ public class HandleMessage implements Runnable {
         }
 	}
 
-	private void backupSubProtocol(String fileId, int chunkNumber, int replicationDegree, byte[] chunkBody) {
+	/*private void backupSubProtocol(String fileId, int chunkNumber, int replicationDegree, byte[] chunkBody) {
         
         String header = "PUTCHUNK " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + replicationDegree+ " " 
         + CR + LF + CR + LF + chunkBody;
@@ -132,6 +124,6 @@ public class HandleMessage implements Runnable {
         Peer.getExecutor().execute(messageSenderThread);
         
         Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, fileId, chunkNumber, replicationDegree), 1, TimeUnit.SECONDS);
-	}
+	}*/
 
 }
