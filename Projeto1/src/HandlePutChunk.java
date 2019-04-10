@@ -11,17 +11,26 @@ public class HandlePutChunk implements Runnable {
 	
     private int CR = 0xD;   
 	private int LF = 0xA;
+	String msg;
 
 	public HandlePutChunk(byte[] message) {
 		
-	    String msg = new String(message, 0, message.length);
+	    this.msg = new String(message, 0, message.length);
         String splitMsg = msg.trim();
         String[] msgParts = splitMsg.split(" ");
         
         fileId = msgParts[3];
         chunkNumber = Integer.parseInt(msgParts[4]);
-        replicationDegree = Integer.parseInt(msgParts[5]);
-        chunkBody = msgParts[6].getBytes();
+		replicationDegree = Integer.parseInt(msgParts[5]);
+		int header_length=0;
+
+		for(int i=0;i<6;i++){
+			header_length+=msgParts[i].length();
+			header_length++;//space
+		}
+		String body = new String(message,header_length, message.length-header_length);
+		chunkBody=body.getBytes();
+                
 	}
 	
 	@Override
@@ -41,6 +50,8 @@ public class HandlePutChunk implements Runnable {
 		
 		if(Peer.getStorage().getSpace() >= chunkBody.length) {
 			Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkBody.length,  replicationDegree);
+			//System.out.println("chunkBody.length--->>>"+chunkBody.length);
+	 		String msg1 = new String(chunkBody, 0, chunkBody.length);
 			chunk.setFileId(fileId);
 			
 			if(!Peer.getStorage().backupChunk(chunk)) {

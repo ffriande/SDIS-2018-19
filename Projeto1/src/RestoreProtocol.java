@@ -58,11 +58,8 @@ public class RestoreProtocol implements Runnable {
                 for (Chunk c : chunksRestored) {
 
                 //  body = c.getBody();
-                    byte[] body = new byte[c.getBody().length-16];
-                    System.arraycopy(c.getBody(), 16, body, 0, body.length);
-                    String msg = new String(body, 0, body.length);
-                    System.out.println(c.getChunkNo()+" -> "+msg);
-
+                    byte[] body = new byte[c.getBody().length-8];
+                    System.arraycopy(c.getBody(), 8, body, 0, body.length);
                     fos.write(body);
 
                 }

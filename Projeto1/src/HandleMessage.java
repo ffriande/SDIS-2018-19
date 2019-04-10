@@ -62,7 +62,14 @@ public class HandleMessage implements Runnable {
 		
 		else if(msgParts[0].equals("CHUNK")) {
 			if(Peer.getUniqueId() != senderPeerID) {
-				byte[] chunkBody = msgParts[5].getBytes();
+				byte[] chunkBody;
+				int header_length=0;
+				for(int i=0;i<5;i++){
+					header_length+=msgParts[i].length();
+					header_length++;//space
+				}
+				String body = new String(message,header_length, message.length-header_length);
+				chunkBody=body.getBytes();
 				Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkBody.length);
 				chunk.setFileId(fileId);
 				Peer.getStorage().getRestoredChunks().add(chunk);
