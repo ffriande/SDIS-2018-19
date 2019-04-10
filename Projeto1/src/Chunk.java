@@ -11,6 +11,12 @@ public class Chunk {
         this.size=size;
         this.replicationDegree = replicationDegree;
     }
+    
+    public Chunk(int nr, byte[] body, int size) {
+        this.chunkNo = nr;
+        this.body = body;
+        this.size=size;
+    }
 
     public String getFileId() {
     	return fileId;

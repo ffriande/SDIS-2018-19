@@ -2,7 +2,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-
 public class HandleMessage implements Runnable {
 
 	private byte[] message;
@@ -71,7 +70,6 @@ public class HandleMessage implements Runnable {
 			}
 			
 		}
-        }
         
         else if(msgParts[0].equals("REMOVED")) {
         	
