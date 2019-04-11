@@ -15,6 +15,7 @@ public class Peer implements RemoteInterface {
 	private static double protocol_version;
 	private static ScheduledThreadPoolExecutor threadPool;
 	private static Storage storage;
+	private static RestoreProtocol restore;
 	
     private static ChannelControl MC;
     private static ChannelBackup MDB;
@@ -49,6 +50,12 @@ public class Peer implements RemoteInterface {
 	
 	public static Storage getStorage() {
 		return storage;
+	}
+
+	public static boolean isRestoring() {
+		if(restore!=null)
+			return !restore.getChunksToRestore().isEmpty();
+		return false;
 	}
 	
 	public static int getUniqueId() {
@@ -138,7 +145,7 @@ public class Peer implements RemoteInterface {
     public synchronized void restore(String path) throws RemoteException {
     	String fileName = null;
 		FileContent f=storage.constainsFile(path);
-		RestoreProtocol restoreThread = new RestoreProtocol(path);
+		this.restore = new RestoreProtocol(path);
             if (f!=null) {
                 for (int i = 0; i < f.getChunks().size(); i++) {
 
@@ -148,12 +155,12 @@ public class Peer implements RemoteInterface {
                     //storage.addWantedChunk(f.getIdentifier(), f.getChunks().get(i).getChunkNo());
                     fileName = f.getFile().getName();
 
-					restoreThread.addChunkToRestore(f.getIdentifier() + "-" + f.getChunks().get(i).getChunkNo());
+					restore.addChunkToRestore(f.getIdentifier() + "-" + f.getChunks().get(i).getChunkNo());
 
                     SendMessage sendThread = new SendMessage(header.getBytes(), "MC");
                     threadPool.execute(sendThread);
                 }
-            Peer.getExecutor().schedule(restoreThread, 1, TimeUnit.SECONDS);
+            Peer.getExecutor().schedule(restore, 1, TimeUnit.SECONDS);
         } else System.out.println("ERROR: File was never backed up.");
     }
 	

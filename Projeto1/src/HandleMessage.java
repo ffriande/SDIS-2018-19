@@ -34,7 +34,7 @@ public class HandleMessage implements Runnable {
         	
         	if(Peer.getUniqueId() != senderPeerID) {
             	Random random = new Random();
-            	Peer.getExecutor().schedule(new HandlePutChunk(message), random.nextInt(400), TimeUnit.MILLISECONDS);
+            	Peer.getExecutor().schedule(new HandlePutChunk(message), random.nextInt(401), TimeUnit.MILLISECONDS);
         	}
         }
         
@@ -49,7 +49,7 @@ public class HandleMessage implements Runnable {
 			if(Peer.getUniqueId() != senderPeerID) {	
 				Random random = new Random();
 				System.out.println("Received GETCHUNK " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
-				Peer.getExecutor().schedule(new HandleGetChunk(fileId, chunkNumber), random.nextInt(400), TimeUnit.MILLISECONDS);
+				Peer.getExecutor().schedule(new HandleGetChunk(fileId, chunkNumber), random.nextInt(401), TimeUnit.MILLISECONDS);
 			}
 		}
 
@@ -61,7 +61,7 @@ public class HandleMessage implements Runnable {
 		}
 		
 		else if(msgParts[0].equals("CHUNK")) {
-			if(Peer.getUniqueId() != senderPeerID) {
+			if(Peer.getUniqueId() != senderPeerID && Peer.isRestoring()) {
 				byte[] chunkBody;
 				int header_length=0;
 				for(int i=0;i<5;i++){
@@ -94,7 +94,7 @@ public class HandleMessage implements Runnable {
             		
             		if(localCount < chunk.getReplicationDegree()) {	
             			Random random = new Random();
-            			Peer.getExecutor().schedule(new BackupSubProtocol(Peer.getUniqueId(), fileId, chunkNumber, chunk.getReplicationDegree(), chunk.getBody()), random.nextInt(400), TimeUnit.MILLISECONDS);
+            			Peer.getExecutor().schedule(new BackupSubProtocol(Peer.getUniqueId(), fileId, chunkNumber, chunk.getReplicationDegree(), chunk.getBody()), random.nextInt(401), TimeUnit.MILLISECONDS);
             		}
         		}
         	}
@@ -112,7 +112,7 @@ public class HandleMessage implements Runnable {
             	
             	if(Peer.getUniqueId() != senderPeerID) {
 	            	Random random = new Random();
-	            	Peer.getExecutor().schedule(new HandlePutChunk(message), random.nextInt(400), TimeUnit.MILLISECONDS);
+	            	Peer.getExecutor().schedule(new HandlePutChunk(message), random.nextInt(401), TimeUnit.MILLISECONDS);
             	}
         	}
         	

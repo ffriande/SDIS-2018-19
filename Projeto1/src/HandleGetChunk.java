@@ -18,7 +18,7 @@ public class HandleGetChunk implements Runnable {
     public void run() {
         
         for (int i = 0; i < Peer.getStorage().getStoredChunks().size(); i++) {
-            if (isSameChunk(Peer.getStorage().getStoredChunks().get(i).getFileId(), Peer.getStorage().getStoredChunks().get(i).getChunkNo()) /*&& !isAbortSend()*/) {
+            if (isSameChunk(Peer.getStorage().getStoredChunks().get(i).getFileId(), Peer.getStorage().getStoredChunks().get(i).getChunkNo())) {
                 String header = "CHUNK " + "1.0" + " " + Peer.getUniqueId() + " " + this.fileId + " " + this.chunkNr + " \r\n\r\n";
               
                 byte[] asciiHeader = header.getBytes();
@@ -44,7 +44,7 @@ public class HandleGetChunk implements Runnable {
                     System.out.println("Sent " + "CHUNK " + "1.0" + " " + Peer.getUniqueId() + " " + this.fileId + " " + this.chunkNr);
                     Random random = new Random();
 
-                    Peer.getExecutor().schedule(sendThread, random.nextInt(400), TimeUnit.MILLISECONDS);
+                    Peer.getExecutor().schedule(sendThread, random.nextInt(401), TimeUnit.MILLISECONDS);
                             
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -58,11 +58,4 @@ public class HandleGetChunk implements Runnable {
         return fileId.equals(this.fileId) && chunkNr == this.chunkNr;
     }
 
-    // private boolean isAbortSend() {
-    //     // for (int i = 0; i < Peer.getStorage().getReceivedChunks().size(); i++) {
-    //     //     if (isSameChunk(Peer.getStorage().getReceivedChunks().get(i).getFileID(), Peer.getStorage().getReceivedChunks().get(i).getNr()))
-    //     //         return true;
-    //     // }
-    //     return false;
-    // }
 }

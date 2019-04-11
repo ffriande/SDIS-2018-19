@@ -19,6 +19,10 @@ public class RestoreProtocol implements Runnable {
     public void addChunkToRestore(String chunk) {
         this.chunksToRestore.add(chunk);
     }
+    
+    public ArrayList<String> getChunksToRestore() {
+        return this.chunksToRestore;
+    }
 
     @Override
     public void run() {
@@ -58,13 +62,18 @@ public class RestoreProtocol implements Runnable {
                 for (Chunk c : chunksRestored) {
 
                 //  body = c.getBody();
-                    byte[] body = new byte[c.getBody().length-8];
-                    System.arraycopy(c.getBody(), 8, body, 0, body.length);
+                    byte[] body = new byte[c.getBody().length-20];
+                    System.arraycopy(c.getBody(), 20, body, 0, body.length);
+                    String s=new String(body,0,80);
+
+                    System.out.println(c.getChunkNo()+" -->> "+s);
                     fos.write(body);
 
                 }
 
                 fos.close();
+                Peer.getStorage().getRestoredChunks().clear();
+                chunksToRestore.clear();
                 return true;
             }
         else {
