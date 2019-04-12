@@ -22,15 +22,16 @@ public class HandlePutChunk implements Runnable {
         fileId = msgParts[3];
         chunkNumber = Integer.parseInt(msgParts[4]);
 		replicationDegree = Integer.parseInt(msgParts[5]);
+		
 		int header_length=0;
 
 		for(int i=0;i<6;i++){
 			header_length+=msgParts[i].length();
 			header_length++;//space
 		}
+		
 		String body = new String(message,header_length, message.length-header_length);
-		chunkBody=body.getBytes();
-                
+		chunkBody=body.getBytes();             
 	}
 	
 	@Override

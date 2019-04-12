@@ -102,8 +102,7 @@ public class HandleMessage implements Runnable {
         
         else if(msgParts[0].equals("PUTCHUNKREMOVED")) {
         	
-        	//havera uma lista de chunks blacklisted que e feita a nivel do peer que foi reclaimed a medida que ele apaga chunks, por cada putchunk especial que ele
-        	//recebe tera de verificar se esse chunk esta na lista, nao fara nada se estiver, mas vai remover da lista para que depois ela possa ficar a zeros.
+        	//the peer will access its own blacklisted chunks to ensure it does not receive the same chunks it just got rid of when disk space was reclaimed.
         	
         	if(!Peer.getStorage().getBlackListedChunks().containsKey(uniqueChunkIdentifier) || Peer.getStorage().getBlackListedChunks().get(uniqueChunkIdentifier) != Peer.getUniqueId()) {
             	if(!Peer.getStorage().getChunkOccurences().contains(uniqueChunkIdentifier)) {
