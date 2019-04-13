@@ -12,7 +12,6 @@ import java.util.concurrent.TimeUnit;
 
 public class Peer implements RemoteInterface {
 	//TODO: ver o getchunk!!, se um peer estiver a enviar ou ja tiver enviado, o outro não envia. concurrent hashmap, provavelmente
-	//TODO: organizar em packages?
 	private static int unique_id;
 	private static double protocol_version;
 	private static ScheduledThreadPoolExecutor threadPool;
@@ -24,9 +23,6 @@ public class Peer implements RemoteInterface {
     private static ChannelControl MC;
     private static ChannelBackup MDB;
     private static ChannelRestore MDR;
-    
-    private static int CR = 0xD;
-    private static int LF = 0xA;
 
 	private String endHeader = " \r\n\r\n";
 	
@@ -181,7 +177,7 @@ public class Peer implements RemoteInterface {
     			
     			//sending an arbitrary amount of times to ensure all space used is deleted
     			for(int z=0; z<200; z++) {
-        			String header = "DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + CR + LF + CR + LF;
+        			String header = "DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier() + endHeader;
         			System.out.println("DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier());
 
 					SendMessage sender = new SendMessage(header.getBytes(), "MC");

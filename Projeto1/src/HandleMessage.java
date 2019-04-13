@@ -32,7 +32,10 @@ public class HandleMessage implements Runnable {
 			Double version = Double.parseDouble(msgParts[1].trim());
 			int senderPeerID = Integer.parseInt(msgParts[2]);
 			String fileId = msgParts[3];
-			int chunkNumber = Integer.parseInt(msgParts[4]);
+
+			int chunkNumber =0;
+			if(msgParts.length>=5)
+				chunkNumber = Integer.parseInt(msgParts[4]);
 
 			String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNumber;
 
