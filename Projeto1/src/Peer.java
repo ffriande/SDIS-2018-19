@@ -174,18 +174,16 @@ public class Peer implements RemoteInterface {
     		
     		FileContent file = storage.getFiles().get(i);
     		
+    		try {
     		if(file.getFile().getPath().equals(path)) {
     			
     			//sending an arbitrary amount of times to ensure all space used is deleted
     			for(int z=0; z<12; z++) {
         			String header = "DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier() + endHeader;
         			System.out.println("DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier());
-					try {
-						SendMessage sender = new SendMessage(header.getBytes("US-ASCII"), "MC");
-						threadPool.execute(sender);
-					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
-					}
+
+					SendMessage sender = new SendMessage(header.getBytes("US-ASCII"), "MC");
+					threadPool.execute(sender);
     			}
     			
         		for(int j=0; j<file.getChunks().size(); j++) {
@@ -196,7 +194,9 @@ public class Peer implements RemoteInterface {
         		storage.getFiles().remove(i);
         		break;
     		}
-   
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
     	}
     }
     
