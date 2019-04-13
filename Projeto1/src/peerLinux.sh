@@ -16,4 +16,4 @@ ACCESSPOINT="$3"
 ACCESSPOINT=${ACCESSPOINT:-"peer1"}
 
 #Usage: <protocolVersion> <peerId> <serviceAccessPoint> <mccIP> <mccPort> <mdbIp> <mdbPort> <mdrIp> <mdrPort>
-java Peer $VERSION $PEERID $ACCESSPOINT 224.0.0.1 8001 224.0.0.2 8002 224.0.0.3 8003
+java Peer $VERSION $PEERID $ACCESSPOINT 224.0.0.88 8001 224.0.0.89 8002 224.0.0.90 8003
