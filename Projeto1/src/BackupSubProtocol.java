@@ -1,3 +1,4 @@
+import java.io.UnsupportedEncodingException;
 import java.util.concurrent.TimeUnit;
 
 public class BackupSubProtocol implements Runnable {
@@ -30,19 +31,22 @@ public class BackupSubProtocol implements Runnable {
         if (!Peer.getStorage().getChunkOccurences().containsKey(key)) { //if this chunk ins't in the current replication degrees table
             Peer.getStorage().getChunkOccurences().put(key, 0); //the chunk is added to that table
         }
-        
-        byte[] asciiHead = header.getBytes();
-        byte[] body = chunkBody;
-        byte[] message = new byte[asciiHead.length + body.length];
-        
-        System.arraycopy(asciiHead, 0, message, 0, asciiHead.length);
-        System.arraycopy(body, 0, message, asciiHead.length, body.length);
-        
-        SendMessage messageSenderThread = new SendMessage(message, "MDB");
-         
-        Peer.getExecutor().execute(messageSenderThread);
-        
-        Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, fileId, chunkNumber, replicationDegree), 1, TimeUnit.SECONDS);
+        try {
+            byte[] asciiHead = header.getBytes("US-ASCII");
+            byte[] body = chunkBody;
+            byte[] message = new byte[asciiHead.length + body.length];
+            
+            System.arraycopy(asciiHead, 0, message, 0, asciiHead.length);
+            System.arraycopy(body, 0, message, asciiHead.length, body.length);
+            
+            SendMessage messageSenderThread = new SendMessage(message, "MDB");
+            
+            Peer.getExecutor().execute(messageSenderThread);
+            
+            Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, fileId, chunkNumber, replicationDegree), 1, TimeUnit.SECONDS);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 	}
 
 }

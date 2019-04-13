@@ -1,6 +1,7 @@
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -20,11 +21,12 @@ public class HandleGetChunk implements Runnable {
         for (int i = 0; i < Peer.getStorage().getStoredChunks().size(); i++) {
             if (isSameChunk(Peer.getStorage().getStoredChunks().get(i).getFileId(), Peer.getStorage().getStoredChunks().get(i).getChunkNo())) {
                 String header = "CHUNK " + "1.0" + " " + Peer.getUniqueId() + " " + this.fileId + " " + this.chunkNr + " \r\n\r\n";
-              
-                byte[] asciiHeader = header.getBytes();
-                String chunkPath = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk"+ chunkNr;
+                
                 try {
-                    
+                    byte[] asciiHeader = header.getBytes("US-ASCII");
+                    String chunkPath = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk"+ chunkNr;
+                
+                    try {  
                     File file = new File(chunkPath);
                     if (!file.exists()) {
                         return;
@@ -46,10 +48,12 @@ public class HandleGetChunk implements Runnable {
 
                     Peer.getExecutor().schedule(sendThread, random.nextInt(401), TimeUnit.MILLISECONDS);
                             
-                } catch (IOException e) {
+                } catch (IOException  e) {
                     e.printStackTrace();
                 }
-
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             }
         }
     }

@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.rmi.AlreadyBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -109,8 +110,8 @@ public class Peer implements RemoteInterface {
         storage.addStoredFile(file);
         
         for(int i=0;i<chunks.size();i++){
-            String header = "PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree+ " " 
-            + CR + LF + CR + LF + chunks.get(i).getBody();
+            String header = "PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree+ 
+			" \r\n\r\n" ;
             
             String uniqueChunkIdentifier = file.getIdentifier() + "/" + "chunk" + chunks.get(i).getChunkNo();
             
@@ -119,8 +120,8 @@ public class Peer implements RemoteInterface {
             }
 
             System.out.println("PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree);
-        
-            byte[] asciiHead = header.getBytes();
+			try {
+            byte[] asciiHead = header.getBytes("US-ASCII");
             byte[] body = chunks.get(i).getBody();
             byte[] message = new byte[asciiHead.length + body.length];
             
@@ -131,13 +132,12 @@ public class Peer implements RemoteInterface {
              
             threadPool.execute(messageSenderThread);
             
-            try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
+			Thread.sleep(500);
+     
+			Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, file.getIdentifier(), chunks.get(i).getChunkNo(), replicationDegree), 1, TimeUnit.SECONDS);			
+			} catch (UnsupportedEncodingException  |InterruptedException e) {
 				System.out.println("BACKUP SLEEP ERROR ON MESSAGE SENDER");
 			}
-     
-            Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, file.getIdentifier(), chunks.get(i).getChunkNo(), replicationDegree), 1, TimeUnit.SECONDS);
         }   
 	}
 	
@@ -151,14 +151,17 @@ public class Peer implements RemoteInterface {
 
                     String header = "GETCHUNK " + protocol_version + " " + unique_id + " " + f.getIdentifier() + " " + f.getChunks().get(i).getChunkNo()+" " + CR + LF + CR + LF;
                     System.out.println("Sent "+ "GETCHUNK " + protocol_version + " " + unique_id + " " + f.getIdentifier() + " " + f.getChunks().get(i).getChunkNo());
-
-                    //storage.addWantedChunk(f.getIdentifier(), f.getChunks().get(i).getChunkNo());
+					
+					try {
                     fileName = f.getFile().getName();
 
 					restore.addChunkToRestore(f.getIdentifier() + "-" + f.getChunks().get(i).getChunkNo());
 
-                    SendMessage sendThread = new SendMessage(header.getBytes(), "MC");
-                    threadPool.execute(sendThread);
+                    SendMessage sendThread = new SendMessage(header.getBytes("US-ASCII"), "MC");
+					threadPool.execute(sendThread);
+					} catch (UnsupportedEncodingException e) {
+						e.printStackTrace();
+					}
                 }
             Peer.getExecutor().schedule(restore, 1, TimeUnit.SECONDS);
         } else System.out.println("ERROR: File was never backed up.");
@@ -177,9 +180,12 @@ public class Peer implements RemoteInterface {
     			for(int z=0; z<40; z++) {
         			String header = "DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + CR + LF + CR + LF;
         			System.out.println("DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier());
-        			
-        			SendMessage sender = new SendMessage(header.getBytes(), "MC");
-        			threadPool.execute(sender);
+				try {
+        			SendMessage sender = new SendMessage(header.getBytes("US-ASCII"), "MC");
+					threadPool.execute(sender);
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
     			}
     			
         		for(int j=0; j<file.getChunks().size(); j++) {
@@ -231,8 +237,8 @@ public class Peer implements RemoteInterface {
     			
     			String header = "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo + " " + CR + LF + CR + LF;
                 System.out.println("Sent " + "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo);
-                
-                byte[] headerASCII = header.getBytes();
+				try {          
+                byte[] headerASCII = header.getBytes("US-ASCII");
                 SendMessage message = new SendMessage(headerASCII, "MC");
                 threadPool.execute(message);
                 
@@ -245,12 +251,15 @@ public class Peer implements RemoteInterface {
                 Peer.getStorage().removeChunkOcurrence(fileId, chunkNo);  
                 Peer.getStorage().setSpace(storageSpace + deletedSpaceSoFar);
                 
-                chunkIter.remove();
+				chunkIter.remove();
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
     		}
     	}
     	
     	System.out.println("NEW STORAGE SPACE " + storage.getSpace());
-    }
+	}
+}
     
     @Override
     public void retrieveStateInfo() throws RemoteException {
