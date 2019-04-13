@@ -25,7 +25,7 @@ public class CollectConfirmMessages implements Runnable {
 		
 		int confirmationMessages = Peer.getStorage().getChunkOccurences().get(uniqueChunkIdentifier);
 		
-		System.out.println("Counted for " + uniqueChunkIdentifier + " STORED: " + confirmationMessages + " replication degree " + replicationDegree);
+		System.out.println("Counted replication for " + uniqueChunkIdentifier + " amount of STORED messages: " + confirmationMessages + " desired replication degree: " + replicationDegree);
 
         if (confirmationMessages < replicationDegree) { 
 
@@ -36,6 +36,7 @@ public class CollectConfirmMessages implements Runnable {
 
             if (this.counter < 5)
                 Peer.getExecutor().schedule(this, this.waitingTime, TimeUnit.SECONDS);
+        
         }
 	}
 

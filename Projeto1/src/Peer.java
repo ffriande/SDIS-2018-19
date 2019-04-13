@@ -213,48 +213,30 @@ public class Peer implements RemoteInterface {
     	
     	// there is more space to reclaim than what is available
     	if(deltaSpace < 0) {
-    		System.err.println("ERROR: There is more space to reclaim that what is available");
+    		System.err.println("ERROR: Specified more space to reclaim than what is possible.");
     		return;
     	}
     	
-    	else {
+    	else if(deltaSpace > 0) {
     		int deletedSpaceSoFar = 0;
     		
     		Iterator<Chunk> chunkIter = storage.getStoredChunks().iterator();
     		
+    		int cap = 0;
+    		
+    		if(deltaSpace == storageSpace) cap = storageSpace;
+    		else cap = kByteSpaceToByte;
+    		
     		Chunk chunk = null;
     		
-    		while(deletedSpaceSoFar < kByteSpaceToByte && chunkIter.hasNext()) {
+    		while(deletedSpaceSoFar < cap && chunkIter.hasNext()) {
     		    chunk = chunkIter.next();
     			deletedSpaceSoFar += chunk.getSize();
-    			
-    			String fileId = chunk.getFileId();
-    			int chunkNo = chunk.getChunkNo();
-    			
-    			String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNo;
-    			
-    			storage.getBlackListedChunks().put(uniqueChunkIdentifier, unique_id);
-    			
-    			String header = "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo + " " + CR + LF + CR + LF;
-                System.out.println("Sent " + "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo);
-				try {          
-                byte[] headerASCII = header.getBytes("US-ASCII");
-                SendMessage message = new SendMessage(headerASCII, "MC");
-                threadPool.execute(message);
+		
+    			reclaim(chunk, storageSpace, deletedSpaceSoFar);
                 
-                // delete on disk
-                String filename = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkNo;
-                File chunkFile = new File(filename);
-                chunkFile.delete();
-                
-                // delete on storage
-                Peer.getStorage().removeChunkOcurrence(fileId, chunkNo);  
-                Peer.getStorage().setSpace(storageSpace + deletedSpaceSoFar);
-                
-				chunkIter.remove();
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-    		}
+                chunkIter.remove();
+    		}	
     	}
     	
     	System.out.println("NEW STORAGE SPACE " + storage.getSpace());
@@ -309,6 +291,32 @@ public class Peer implements RemoteInterface {
     
     public double convertKByte(int num) {
     	return  (double) num/1000;
+    }
+    
+    public void reclaim(Chunk chunk, int spaceStorage, int deletedSpace) {
+		String fileId = chunk.getFileId();
+		int chunkNo = chunk.getChunkNo();
+		
+		String uniqueChunkIdentifier = fileId + "/" + "chunk" + chunkNo;
+		
+		storage.getBlackListedChunks().put(uniqueChunkIdentifier, unique_id);
+		
+		String header = "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo + " " + CR + LF + CR + LF;
+        System.out.println("Sent " + "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo);
+        
+        byte[] headerASCII = header.getBytes();
+        SendMessage message = new SendMessage(headerASCII, "MC");
+        threadPool.execute(message);
+        
+        // delete on disk
+        String filename = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkNo;
+        File chunkFile = new File(filename);
+        chunkFile.delete();
+        
+        // delete on storage
+        Peer.getStorage().removeChunkOcurrence(fileId, chunkNo);
+        
+        storage.setSpace(spaceStorage + deletedSpace);
     }
 
 }

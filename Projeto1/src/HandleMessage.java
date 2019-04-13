@@ -62,13 +62,13 @@ public class HandleMessage implements Runnable {
 				if (Peer.getUniqueId() != senderPeerID) {
 					Random random = new Random();
 					System.out.println(
-							"Received GETCHUNK " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
 					Peer.getExecutor().schedule(new HandleGetChunk(fileId, chunkNumber), random.nextInt(401),
+							"Received GETCHUNK " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
 							TimeUnit.MILLISECONDS);
 				}
 			}
-
 			else if (msgParts[0].equals("DELETE")) {
+
 				if (Peer.getUniqueId() != senderPeerID) {
 					Peer.getStorage().deleteStoredChunk(fileId);
 					System.out.println("Received DELETE for chunk " + uniqueChunkIdentifier);
@@ -76,8 +76,8 @@ public class HandleMessage implements Runnable {
 			}
 
 			else if (msgParts[0].equals("CHUNK")) {
-				if (Peer.getUniqueId() != senderPeerID && Peer.isRestoring()) {
 					header_length+=4;
+				if (Peer.getUniqueId() != senderPeerID && Peer.isRestoring()) {
 					byte[] chunkBody=new byte[message.length-header_length];
 					System.arraycopy(message, header_length, chunkBody, 0, message.length-header_length);
 					Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkBody.length);
@@ -86,61 +86,47 @@ public class HandleMessage implements Runnable {
 					System.out.println("Received CHUNK " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
 				}
 			}
-
-			else if (msgParts[0].equals("REMOVED")) {
-				if (Peer.getUniqueId() != senderPeerID) {
-					if (Peer.getStorage().getSpecificChunk(fileId, chunkNumber) != null) {
-
-						Chunk chunk = Peer.getStorage().getSpecificChunk(fileId, chunkNumber);
-
-						// "a peer that has a local copy of the chunk shall update its local count of
-						// this chunk"
-						Peer.getStorage().decStoredOccurence(uniqueChunkIdentifier);
-						System.out.println(
-								"Received REMOVED " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
-
-						// "If this count drops below the desired replication degree of that chunk, it
-						// shall initiate the chunk backup subprotocol"
-						int localCount = Peer.getStorage().getChunkOccurences().get(uniqueChunkIdentifier);
-
-						System.out.println(
-								"Local count: " + localCount + " " + "Rep degree: " + chunk.getReplicationDegree());
-
-						if (localCount < chunk.getReplicationDegree()) {
-							Random random = new Random();
-							Peer.getExecutor().schedule(
-									new BackupSubProtocol(Peer.getUniqueId(), fileId, chunkNumber,
-											chunk.getReplicationDegree(), chunk.getBody()),
-									random.nextInt(401), TimeUnit.MILLISECONDS);
-						}
-					}
-				}
-			}
-
-			else if (msgParts[0].equals("PUTCHUNKREMOVED")) {
-
-				// havera uma lista de chunks blacklisted que e feita a nivel do peer que foi
-				// reclaimed a medida que ele apaga chunks, por cada putchunk especial que ele
-				// recebe tera de verificar se esse chunk esta na lista, nao fara nada se
-				// estiver, mas vai remover da lista para que depois ela possa ficar a zeros.
-
-				if (!Peer.getStorage().getBlackListedChunks().containsKey(uniqueChunkIdentifier)
-						|| Peer.getStorage().getBlackListedChunks().get(uniqueChunkIdentifier) != Peer.getUniqueId()) {
-					if (!Peer.getStorage().getChunkOccurences().contains(uniqueChunkIdentifier)) {
-						Peer.getStorage().getChunkOccurences().put(uniqueChunkIdentifier, 0);
-					}
-
-					if (Peer.getUniqueId() != senderPeerID) {
-						Random random = new Random();
-						Peer.getExecutor().schedule(new HandlePutChunk(message), random.nextInt(401),TimeUnit.MILLISECONDS);
-					}
-				}
-
-			}
-
-
-
-		// String msg = new String(message, StandardCharsets.UTF_8);
+		}
+        
+        else if(msgParts[0].equals("REMOVED")) {
+        	if(Peer.getUniqueId() != senderPeerID) {
+        		if(Peer.getStorage().getSpecificChunk(fileId, chunkNumber) != null) {
+        			
+        			Chunk chunk = Peer.getStorage().getSpecificChunk(fileId, chunkNumber); 
+        			
+            		//"a peer that has a local copy of the chunk shall update its local count of this chunk"
+            		Peer.getStorage().decStoredOccurence(uniqueChunkIdentifier);
+            		System.out.println("Received REMOVED " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
+            		
+            		//"If this count drops below the desired replication degree of that chunk, it shall initiate the chunk backup subprotocol"
+            		int localCount =  Peer.getStorage().getChunkOccurences().get(uniqueChunkIdentifier);
+            		
+            		System.out.println("Local count: " + localCount + " " + "Rep degree: " + chunk.getReplicationDegree());
+            		
+            		if(localCount < chunk.getReplicationDegree()) {	
+            			Random random = new Random();
+            			Peer.getExecutor().schedule(new BackupSubProtocol(Peer.getUniqueId(), fileId, chunkNumber, chunk.getReplicationDegree(), chunk.getBody()), random.nextInt(401), TimeUnit.MILLISECONDS);
+            		}
+        		}
+        	}
+        }
+        
+        else if(msgParts[0].equals("PUTCHUNKREMOVED")) {
+        	
+        	//the peer will access its own blacklisted chunks to ensure it does not receive the same chunks it just got rid of when disk space was reclaimed.
+        	
+        	if(!Peer.getStorage().getBlackListedChunks().containsKey(uniqueChunkIdentifier) || Peer.getStorage().getBlackListedChunks().get(uniqueChunkIdentifier) != Peer.getUniqueId()) {
+            	if(!Peer.getStorage().getChunkOccurences().contains(uniqueChunkIdentifier)) {
+            		Peer.getStorage().getChunkOccurences().put(uniqueChunkIdentifier, 0);
+            	}
+            	
+            	if(Peer.getUniqueId() != senderPeerID) {
+	            	Random random = new Random();
+	            	Peer.getExecutor().schedule(new HandlePutChunk(message), random.nextInt(401), TimeUnit.MILLISECONDS);
+            	}
+        	}
+        	
+        }
 	}
 
 }
