@@ -19,6 +19,8 @@ public class Peer implements RemoteInterface {
 	private static Storage storage;
 	private static RestoreProtocol restore;
 	
+	int STORAGE_MAX_SIZE = 2000000000;
+	
     private static ChannelControl MC;
     private static ChannelBackup MDB;
     private static ChannelRestore MDR;
@@ -317,7 +319,9 @@ public class Peer implements RemoteInterface {
         // delete on storage
         Peer.getStorage().removeChunkOcurrence(fileId, chunkNo);
         
-        storage.setSpace(spaceStorage + deletedSpace);
+        if(storage.getSpace() < STORAGE_MAX_SIZE) {        	
+            storage.setSpace(spaceStorage + deletedSpace);
+        }
     }
 
 }
