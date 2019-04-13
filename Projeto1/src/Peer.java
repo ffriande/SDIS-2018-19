@@ -24,6 +24,9 @@ public class Peer implements RemoteInterface {
     private static ChannelControl MC;
     private static ChannelBackup MDB;
     private static ChannelRestore MDR;
+    
+    private static int CR = 0xD;
+    private static int LF = 0xA;
 
 	private String endHeader = " \r\n\r\n";
 	
@@ -174,15 +177,14 @@ public class Peer implements RemoteInterface {
     		
     		FileContent file = storage.getFiles().get(i);
     		
-    		try {
     		if(file.getFile().getPath().equals(path)) {
     			
     			//sending an arbitrary amount of times to ensure all space used is deleted
-    			for(int z=0; z<12; z++) {
-        			String header = "DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier() + endHeader;
+    			for(int z=0; z<40; z++) {
+        			String header = "DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + CR + LF + CR + LF;
         			System.out.println("DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier());
 
-					SendMessage sender = new SendMessage(header.getBytes("US-ASCII"), "MC");
+					SendMessage sender = new SendMessage(header.getBytes(), "MC");
 					threadPool.execute(sender);
     			}
     			
@@ -194,9 +196,6 @@ public class Peer implements RemoteInterface {
         		storage.getFiles().remove(i);
         		break;
     		}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
     	}
     }
     
