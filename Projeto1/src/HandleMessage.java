@@ -61,9 +61,8 @@ public class HandleMessage implements Runnable {
 			else if (msgParts[0].equals("GETCHUNK")) {
 				if (Peer.getUniqueId() != senderPeerID) {
 					Random random = new Random();
-					System.out.println(
+					System.out.println("Received GETCHUNK " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
 					Peer.getExecutor().schedule(new HandleGetChunk(fileId, chunkNumber), random.nextInt(401),
-							"Received GETCHUNK " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
 							TimeUnit.MILLISECONDS);
 				}
 			}
@@ -86,7 +85,6 @@ public class HandleMessage implements Runnable {
 					System.out.println("Received CHUNK " + version + " " + senderPeerID + " " + fileId + " " + chunkNumber);
 				}
 			}
-		}
         
         else if(msgParts[0].equals("REMOVED")) {
         	if(Peer.getUniqueId() != senderPeerID) {
