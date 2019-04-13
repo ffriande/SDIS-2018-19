@@ -5,7 +5,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 
 public class HandlePutChunk implements Runnable {
 	
@@ -15,8 +14,7 @@ public class HandlePutChunk implements Runnable {
 	private String fileId;
 	private int replicationDegree;
 	
-    private int CR = 0xD;   
-	private int LF = 0xA;
+	private String endHeader = " \r\n\r\n";
 	String msg;
 
 	public HandlePutChunk(byte[] message) {
@@ -32,6 +30,7 @@ public class HandlePutChunk implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
 		String splitMsg = header.trim();
 		String[] msgParts= splitMsg.split(" ");
 		fileId = msgParts[3].trim();
@@ -63,11 +62,8 @@ public class HandlePutChunk implements Runnable {
 			chunk.setFileId(fileId);
 			
 			if(!Peer.getStorage().backupChunk(chunk)) {
-				System.out.println("BACUK FAILEDD\n\n");
 				return;
 			}
-			System.out.println(bodyLength);
-
 
             try {
             	String pathToBackup = "peer" + Peer.getUniqueId() + "/" + "backup";
@@ -93,7 +89,7 @@ public class HandlePutChunk implements Runnable {
                 e.printStackTrace();
             }
             
-            String header = "STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + " " + CR + LF + CR + LF;
+            String header = "STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber + endHeader;
             System.out.println("STORED " + "1.0" + " " + Peer.getUniqueId() + " " + fileId + " " + chunkNumber);
             
             Peer.getStorage().countStoredOccurence(uniqueChunkIdentifier);

@@ -1,4 +1,3 @@
-
 public class SendMessage implements Runnable {
 
 	byte[] message;

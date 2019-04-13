@@ -2,15 +2,12 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 public class HandleMessage implements Runnable {
 
 	private byte[] message;
-	private int CR = '\r';
-	private int LF = '\n';
 
 	public HandleMessage(byte[] msg) {
 		message = msg;

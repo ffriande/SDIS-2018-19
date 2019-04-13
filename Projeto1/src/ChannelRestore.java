@@ -17,7 +17,7 @@ public class ChannelRestore implements Runnable {
         try {
             MDRAddress = MDR_addr;
             port = MDRPort;
-            address = InetAddress.getByName(MDR_addr);
+            address = InetAddress.getByName(MDRAddress);
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -38,7 +38,6 @@ public class ChannelRestore implements Runnable {
     @Override
     public void run() {
         
-        // TODO Auto-generated method stub
         byte[] buf = new byte[65507];
 
         try {

@@ -25,8 +25,7 @@ public class Peer implements RemoteInterface {
     private static ChannelBackup MDB;
     private static ChannelRestore MDR;
 
-    private int CR = 0xD;   
-	private int LF = 0xA;
+	private String endHeader = " \r\n\r\n";
 	
 	public Peer(String MC_address, int MC_port, String MDB_address, int MDB_port, String MDR_address, int MDR_port) {
 		storage = new Storage();
@@ -113,8 +112,7 @@ public class Peer implements RemoteInterface {
         storage.addStoredFile(file);
         
         for(int i=0;i<chunks.size();i++){
-			String header = "PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree+ 
-			" \r\n\r\n" ;
+			String header = "PUTCHUNK " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + chunks.get(i).getChunkNo() + " " + replicationDegree + endHeader ;
             
             String uniqueChunkIdentifier = file.getIdentifier() + "/" + "chunk" + chunks.get(i).getChunkNo();
             
@@ -149,11 +147,11 @@ public class Peer implements RemoteInterface {
     public synchronized void restore(String path) throws RemoteException {
     	String fileName = null;
 		FileContent f=storage.constainsFile(path);
-		this.restore = new RestoreProtocol(path);
+		restore = new RestoreProtocol(path);
             if (f!=null) {
                 for (int i = 0; i < f.getChunks().size(); i++) {
 
-                    String header = "GETCHUNK " + protocol_version + " " + unique_id + " " + f.getIdentifier() + " " + f.getChunks().get(i).getChunkNo()+" " + CR + LF + CR + LF;
+                    String header = "GETCHUNK " + protocol_version + " " + unique_id + " " + f.getIdentifier() + " " + f.getChunks().get(i).getChunkNo() + endHeader;
                     System.out.println("Sent "+ "GETCHUNK " + protocol_version + " " + unique_id + " " + f.getIdentifier() + " " + f.getChunks().get(i).getChunkNo());
 				
 					try {
@@ -181,8 +179,8 @@ public class Peer implements RemoteInterface {
     		if(file.getFile().getPath().equals(path)) {
     			
     			//sending an arbitrary amount of times to ensure all space used is deleted
-    			for(int z=0; z<40; z++) {
-        			String header = "DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier() + " " + CR + LF + CR + LF;
+    			for(int z=0; z<200; z++) {
+        			String header = "DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier() + endHeader;
         			System.out.println("DELETE " + protocol_version + " " + unique_id + " " + file.getIdentifier());
 					try {
 						SendMessage sender = new SendMessage(header.getBytes("US-ASCII"), "MC");
@@ -304,7 +302,7 @@ public class Peer implements RemoteInterface {
 		
 		storage.getBlackListedChunks().put(uniqueChunkIdentifier, unique_id);
 		
-		String header = "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo + " " + CR + LF + CR + LF;
+		String header = "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo + endHeader;
         System.out.println("Sent " + "REMOVED " + protocol_version + " " + unique_id + " " + fileId + " " + chunkNo);
         
         byte[] headerASCII = header.getBytes();

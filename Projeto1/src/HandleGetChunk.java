@@ -31,6 +31,7 @@ public class HandleGetChunk implements Runnable {
                     if (!file.exists()) {
                         return;
                     }
+                 
                     byte[] body = new byte[(int) file.length()];
                     FileInputStream in = new FileInputStream(file);
                     in.read(body);
@@ -38,7 +39,6 @@ public class HandleGetChunk implements Runnable {
                     byte[] message = new byte[asciiHeader.length + body.length];
                     
                     System.arraycopy(asciiHeader, 0, message, 0, asciiHeader.length);
-                    
                     System.arraycopy(body, 0, message, asciiHeader.length, body.length);
 
                     SendMessage sendThread = new SendMessage(message, "MDR");
@@ -47,6 +47,7 @@ public class HandleGetChunk implements Runnable {
                     Random random = new Random();
 
                     Peer.getExecutor().schedule(sendThread, random.nextInt(401), TimeUnit.MILLISECONDS);
+                    in.close();
                             
                 } catch (IOException  e) {
                     e.printStackTrace();
@@ -56,6 +57,8 @@ public class HandleGetChunk implements Runnable {
             }
             }
         }
+        
+        
     }
 
     private boolean isSameChunk(String fileId, int chunkNr) {
