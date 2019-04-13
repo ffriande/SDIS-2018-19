@@ -132,12 +132,10 @@ public class Peer implements RemoteInterface {
 				SendMessage messageSenderThread = new SendMessage(message, "MDB");
 				
 				threadPool.execute(messageSenderThread);
-				
-				Thread.sleep(500);
 
 				Peer.getExecutor().schedule(new CollectConfirmMessages(message, 1, file.getIdentifier(), chunks.get(i).getChunkNo(), replicationDegree), 1, TimeUnit.SECONDS);
-			} catch (UnsupportedEncodingException  |InterruptedException e) {
-				System.out.println("BACKUP SLEEP ERROR ON MESSAGE SENDER");
+			} catch (UnsupportedEncodingException e) {
+				System.out.println("BACKUP ENCODING ERROR ON MESSAGE SENDER");
 			}
      
         }   
