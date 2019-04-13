@@ -310,7 +310,7 @@ public class Peer implements RemoteInterface {
         // delete on storage
         Peer.getStorage().removeChunkOcurrence(fileId, chunkNo);
         
-        if(storage.getSpace() + deletedSpace < STORAGE_MAX_SIZE) {        	
+        if(storage.getSpace() + deletedSpace <= STORAGE_MAX_SIZE) {        	
             storage.setSpace(spaceStorage + deletedSpace);
         }
     }
