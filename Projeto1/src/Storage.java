@@ -1,6 +1,7 @@
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Storage {
@@ -105,28 +106,23 @@ public class Storage {
 	}
 	
 	public void deleteStoredChunk(String fileId) {
-		Chunk chunkToDelete = null;
-		boolean delete = false;
-		
-		for(int i=0; i < this.storedChunks.size(); i++) {
-			chunkToDelete = this.storedChunks.get(i);
-			
-			if(chunkToDelete.getFileId().equals(fileId)) {
-				delete = true;
-				String path = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunkToDelete.getChunkNo();
-				File fileToDelete = new File(path);
-				
-				//remove from disk
-				fileToDelete.delete();
-				break;
-			}
-		}
-		
-		//remove from stored chunks
-		if(delete == true) {
-			this.space += chunkToDelete.getSize();
-			this.storedChunks.remove(chunkToDelete);
-		}
+        for (Iterator<Chunk> iter = this.storedChunks.iterator(); iter.hasNext(); ) {
+            Chunk chunk = iter.next();
+            
+            if (chunk.getFileId().equals(fileId)) {
+                String filename = "peer" + Peer.getUniqueId() + "/" + "backup" + "/" + fileId + "/" + "chunk" + chunk.getChunkNo();
+                File file = new File(filename);
+                file.delete();
+                removeChunkOcurrence(fileId, chunk.getChunkNo());
+                
+                if(space + chunk.getSize() <= 2000000000) {
+                	space += chunk.getSize();
+                }
+                
+                iter.remove();
+            }
+            
+        }
 	}
 	
 	public ArrayList<FileContent> getFiles(){

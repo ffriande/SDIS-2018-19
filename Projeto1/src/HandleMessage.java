@@ -33,7 +33,7 @@ public class HandleMessage implements Runnable {
 			int senderPeerID = Integer.parseInt(msgParts[2]);
 			String fileId = msgParts[3];
 
-			int chunkNumber =0;
+			int chunkNumber = 0;
 			if(msgParts.length>=5)
 				chunkNumber = Integer.parseInt(msgParts[4]);
 
@@ -70,7 +70,7 @@ public class HandleMessage implements Runnable {
 
 				if (Peer.getUniqueId() != senderPeerID) {
 					Peer.getStorage().deleteStoredChunk(fileId);
-					System.out.println("Received DELETE for chunk " + uniqueChunkIdentifier);
+					System.out.println("Received DELETE for file " + fileId);
 				}
 			}
 
@@ -98,8 +98,6 @@ public class HandleMessage implements Runnable {
             		
             		//"If this count drops below the desired replication degree of that chunk, it shall initiate the chunk backup subprotocol"
             		int localCount =  Peer.getStorage().getChunkOccurences().get(uniqueChunkIdentifier);
-            		
-            		System.out.println("Local count: " + localCount + " " + "Rep degree: " + chunk.getReplicationDegree());
             		
             		if(localCount < chunk.getReplicationDegree()) {	
             			Random random = new Random();

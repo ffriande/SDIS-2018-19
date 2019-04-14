@@ -97,7 +97,7 @@ public class FileContent {
             }
             
             Chunk chunk = new Chunk(chunkNumber, chunkBody, chunkSize, replicationDegree);
-            chunk.setFileId(this.getIdentifier());
+            chunk.setFileId(identifier);
             this.chunks.add(chunk);
             chunkNumber++;
         }

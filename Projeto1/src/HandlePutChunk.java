@@ -33,7 +33,7 @@ public class HandlePutChunk implements Runnable {
 		
 		String splitMsg = header.trim();
 		String[] msgParts= splitMsg.split(" ");
-		fileId = msgParts[3].trim();
+		fileId = msgParts[3].trim();		
 		chunkNumber = Integer.parseInt(msgParts[4]);
 		replicationDegree = Integer.parseInt(msgParts[5]);
 
@@ -53,6 +53,7 @@ public class HandlePutChunk implements Runnable {
             if(Peer.getStorage().getFiles().get(i).getIdentifier().equals(fileId)) 
 				return;
         }
+        
 		if(Peer.getStorage().getChunkOccurences().get(uniqueChunkIdentifier) >= replicationDegree) {
 			return;
 		}
@@ -99,6 +100,10 @@ public class HandlePutChunk implements Runnable {
 				e.printStackTrace();
 			}
 
+		}
+		
+		else {
+			System.out.println("Error: There is not enough space to store chunks!");
 		}
 	}
 
