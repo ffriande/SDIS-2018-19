@@ -224,7 +224,7 @@ public class Peer implements RemoteInterface {
                 chunkIter.remove();
     		}
     		
-    		storage.setSpace(kByteSpaceToByte - storage.occupiedChunkSpace());
+    		storage.setSpace(kByteSpaceToByte);
     	}
     	
     	System.out.println("NEW STORAGE SPACE " + storage.getSpace());
